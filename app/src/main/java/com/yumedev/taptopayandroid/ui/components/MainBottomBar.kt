@@ -18,11 +18,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.yumedev.taptopayandroid.navigation.NavigationRoutes
 
 @Composable
 fun MainBottomBar(
     currentRoute: String,
-    onNavigate: (String) -> Unit
+    navController: NavHostController
 ) {
     Column {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -36,47 +38,62 @@ fun MainBottomBar(
             )
 
             NavigationBarItem(
-                selected = currentRoute == "home",
-                onClick = { onNavigate("home") },
+                selected = currentRoute == NavigationRoutes.Home.route,
+                onClick = {
+                    navController.navigate(NavigationRoutes.Home.route) {
+                        popUpTo(NavigationRoutes.Home.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
                 colors = itemColors,
                 icon = {
                     Icon(
                         imageVector = Icons.Default.Nfc,
-                        contentDescription = "Cobrar",
+                        contentDescription = "Payment",
                         modifier = Modifier.size(24.dp)
                     )
                 },
-                label = { Text("Cobrar") }
+                label = { Text("Payment") }
             )
             // Item for future feature: History of the Data NFC
             /*
             NavigationBarItem(
-                selected = currentRoute == "history",
-                onClick = { onNavigate("history") },
+                selected = currentRoute == NavigationRoutes.History.route,
+                onClick = {
+                    navController.navigate(NavigationRoutes.History.route) {
+                        popUpTo(NavigationRoutes.Home.route)
+                        launchSingleTop = true
+                    }
+                },
                 colors = itemColors,
                 icon = {
                     Icon(
                         imageVector = Icons.Default.History,
-                        contentDescription = "Historial",
+                        contentDescription = "History",
                         modifier = Modifier.size(24.dp)
                     )
                 },
-                label = { Text("Historial") }
+                label = { Text("History") }
             )
              */
 
             NavigationBarItem(
-                selected = currentRoute.startsWith("settings"),
-                onClick = { onNavigate("settings") },
+                selected = currentRoute.startsWith(NavigationRoutes.Settings.route),
+                onClick = {
+                    navController.navigate(NavigationRoutes.Settings.route) {
+                        popUpTo(NavigationRoutes.Home.route)
+                        launchSingleTop = true
+                    }
+                },
                 colors = itemColors,
                 icon = {
                     Icon(
                         imageVector = Icons.Default.Settings,
-                        contentDescription = "Configuración",
+                        contentDescription = "Settings",
                         modifier = Modifier.size(24.dp)
                     )
                 },
-                label = { Text("Configuración") }
+                label = { Text("Settings") }
             )
         }
     }

@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yumedev.taptopayandroid.ui.components.Keypad
 import com.yumedev.taptopayandroid.ui.components.PrimaryButton
-import com.yumedev.taptopayandroid.ui.components.SquareKeypad
 
 private fun formatCurrency(digits: String): String {
     if (digits.isEmpty()) return "0.00"
@@ -32,7 +32,7 @@ private fun formatCurrency(digits: String): String {
 
 @Composable
 fun HomeScreen(
-    onGenerateQr: (String) -> Unit,
+    onGeneratePayment: (String) -> Unit,
     innerPadding: PaddingValues = PaddingValues()
 ) {
     var rawDigits by remember { mutableStateOf("") }
@@ -61,9 +61,9 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        SquareKeypad(
+        Keypad(
             onNumberClick = { number ->
-                if (rawDigits.isEmpty() && number == 0) return@SquareKeypad
+                if (rawDigits.isEmpty() && number == 0) return@Keypad
                 if (rawDigits.length < 9) rawDigits += number.toString()
             },
             onClear = {
@@ -77,8 +77,8 @@ fun HomeScreen(
         Spacer(modifier = Modifier.weight(0.3f))
 
         PrimaryButton(
-            text = "Generar Cobro",
-            onClick = { onGenerateQr(displayAmount) },
+            text = "Start Payment",
+            onClick = { onGeneratePayment(displayAmount) },
             modifier = Modifier.padding(16.dp),
             isEnable = displayAmount != "0.00",
             leadingIcon = Icons.Default.Nfc

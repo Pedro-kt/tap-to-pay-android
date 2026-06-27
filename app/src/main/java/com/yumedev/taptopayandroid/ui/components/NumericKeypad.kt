@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.yumedev.taptopayandroid.R
 
 @Composable
-fun SquareKeypad(
+fun Keypad(
     onNumberClick: (Int) -> Unit,
     onClear: () -> Unit,
     onBackspace: () -> Unit
@@ -91,7 +91,7 @@ fun SquareKey(
         if (label == "⌫") {
             Icon(
                 painter = painterResource(R.drawable.delete),
-                contentDescription = "Borrar",
+                contentDescription = "Delete",
                 modifier = Modifier.size(26.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
