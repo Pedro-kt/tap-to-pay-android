@@ -5,6 +5,9 @@
     <!-- NFC permissions -->
     <uses-permission android:name="android.permission.NFC" />
 
+    <!-- Internet permissions -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <!-- NFC feature requirement -->
     <uses-feature
         android:name="android.hardware.nfc"
