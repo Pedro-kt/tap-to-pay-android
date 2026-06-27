@@ -1,4 +1,4 @@
-package com.yumedev.taptopayandroid.ui.screens
+package com.yumedev.taptopayandroid.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yumedev.taptopayandroid.ui.components.Keypad
-import com.yumedev.taptopayandroid.ui.components.PrimaryButton
+import com.yumedev.taptopayandroid.presentation.ui.components.Keypad
+import com.yumedev.taptopayandroid.presentation.ui.components.PrimaryButton
 
 private fun formatCurrency(digits: String): String {
     if (digits.isEmpty()) return "0.00"

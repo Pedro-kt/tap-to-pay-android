@@ -1,4 +1,4 @@
-package com.yumedev.taptopayandroid.ui.components
+package com.yumedev.taptopayandroid.presentation.ui.components
 
 import android.view.SoundEffectConstants
 import androidx.compose.foundation.border

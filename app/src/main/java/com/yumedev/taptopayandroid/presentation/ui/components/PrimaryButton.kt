@@ -1,4 +1,4 @@
-package com.yumedev.taptopayandroid.ui.components
+package com.yumedev.taptopayandroid.presentation.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

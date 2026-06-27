@@ -10,9 +10,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.yumedev.taptopayandroid.navigation.NavGraph
-import com.yumedev.taptopayandroid.ui.components.MainBottomBar
-import com.yumedev.taptopayandroid.ui.theme.TapToPayAndroidTheme
+import com.yumedev.taptopayandroid.presentation.navigation.NavGraph
+import com.yumedev.taptopayandroid.presentation.ui.components.MainBottomBar
+import com.yumedev.taptopayandroid.presentation.ui.theme.TapToPayAndroidTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.yumedev.taptopayandroid.ui.theme
+package com.yumedev.taptopayandroid.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

@@ -1,4 +1,4 @@
-package com.yumedev.taptopayandroid.navigation
+package com.yumedev.taptopayandroid.presentation.navigation
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,9 +7,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.yumedev.taptopayandroid.ui.screens.HistoryScreen
-import com.yumedev.taptopayandroid.ui.screens.HomeScreen
-import com.yumedev.taptopayandroid.ui.screens.SettingsScreen
+import com.yumedev.taptopayandroid.presentation.ui.screens.HistoryScreen
+import com.yumedev.taptopayandroid.presentation.ui.screens.HomeScreen
+import com.yumedev.taptopayandroid.presentation.ui.screens.SettingsScreen
 
 @Composable
 fun NavGraph(

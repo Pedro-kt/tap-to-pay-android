@@ -1,4 +1,4 @@
-package com.yumedev.taptopayandroid.ui.components
+package com.yumedev.taptopayandroid.presentation.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.yumedev.taptopayandroid.navigation.NavigationRoutes
+import com.yumedev.taptopayandroid.presentation.navigation.NavigationRoutes
 
 @Composable
 fun MainBottomBar(

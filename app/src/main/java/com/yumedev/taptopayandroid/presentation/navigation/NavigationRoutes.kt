@@ -1,4 +1,4 @@
-package com.yumedev.taptopayandroid.navigation
+package com.yumedev.taptopayandroid.presentation.navigation
 
 sealed class NavigationRoutes(val route: String) {
     data object Home : NavigationRoutes("home")
