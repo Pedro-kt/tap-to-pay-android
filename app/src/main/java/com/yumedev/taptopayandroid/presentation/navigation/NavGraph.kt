@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.yumedev.taptopayandroid.domain.model.CardInfo
 import com.yumedev.taptopayandroid.domain.model.CardType
+import com.yumedev.taptopayandroid.presentation.ui.screens.ErrorScreen
 import com.yumedev.taptopayandroid.presentation.ui.screens.HistoryScreen
 import com.yumedev.taptopayandroid.presentation.ui.screens.HomeScreen
 import com.yumedev.taptopayandroid.presentation.ui.screens.SettingsScreen
@@ -59,6 +60,19 @@ fun NavGraph(
                         }
                     }
                 },
+                onError = { errorMessage ->
+                    navController.navigate(
+                        NavigationRoutes.Error.createRoute(
+                            amount = amount,
+                            errorMessage = errorMessage
+                        )
+                    ) {
+                        // Remove TapToPay from back stack
+                        popUpTo(NavigationRoutes.TapToPay.route) {
+                            inclusive = true
+                        }
+                    }
+                },
                 innerPadding = innerPadding
             )
         }
@@ -101,6 +115,27 @@ fun NavGraph(
                 innerPadding = innerPadding,
                 onNavigateToDetails = {
                     // Navigate back to home for now
+                    navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
+                }
+            )
+        }
+
+        composable(
+            route = NavigationRoutes.Error.route,
+            arguments = listOf(
+                navArgument("amount") { type = NavType.StringType },
+                navArgument("errorMessage") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val amount = backStackEntry.arguments?.getString("amount") ?: "$0.00"
+            val errorMessage = backStackEntry.arguments?.getString("errorMessage") ?: "Unknown error"
+
+            ErrorScreen(
+                amount = amount,
+                errorMessage = errorMessage,
+                innerPadding = innerPadding,
+                onNavigateToHome = {
+                    // Navigate back to home
                     navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
                 }
             )

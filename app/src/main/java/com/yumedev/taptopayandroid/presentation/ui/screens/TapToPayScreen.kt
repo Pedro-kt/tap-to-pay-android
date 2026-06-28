@@ -23,7 +23,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -51,7 +50,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.domain.model.CardInfo
 import com.yumedev.taptopayandroid.domain.model.NfcState
-import com.yumedev.taptopayandroid.presentation.ui.components.PrimaryButton
 import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
 
 @Composable
@@ -59,6 +57,7 @@ fun TapToPayScreen(
     amount: String,
     onCancel: () -> Unit,
     onSuccess: (CardInfo) -> Unit,
+    onError: (String) -> Unit,
     innerPadding: PaddingValues,
     viewModel: TapToPayViewModel = viewModel()
 ) {
@@ -68,10 +67,16 @@ fun TapToPayScreen(
         viewModel.startWaitingForCard()
     }
 
-    // Navigate to success screen when card is detected
+    // Navigate to success or error screen based on state
     LaunchedEffect(nfcState) {
-        if (nfcState is NfcState.Success) {
-            onSuccess((nfcState as NfcState.Success).cardInfo)
+        when (nfcState) {
+            is NfcState.Success -> {
+                onSuccess((nfcState as NfcState.Success).cardInfo)
+            }
+            is NfcState.Error -> {
+                onError((nfcState as NfcState.Error).message)
+            }
+            else -> {}
         }
     }
 
@@ -106,37 +111,17 @@ fun TapToPayScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Content based on NFC state
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.Center
         ) {
-            when (nfcState) {
-                is NfcState.Idle, is NfcState.Waiting, is NfcState.Success -> {
-                    WaitingContent()
-                }
-                is NfcState.Error -> {
-                    ErrorContent((nfcState as NfcState.Error).message, amount)
-                }
-            }
+            WaitingContent()
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Bottom button
-        when (nfcState) {
-            is NfcState.Error -> {
-                PrimaryButton(
-                    text = stringResource(id = R.string.try_again),
-                    onClick = { viewModel.resetState() },
-                    leadingIcon = Icons.Default.Refresh
-                )
-            }
-            else -> {
-                CancelButton(onClick = onCancel)
-            }
-        }
+        CancelButton(onClick = onCancel)
     }
 }
 
@@ -235,34 +220,6 @@ private fun WaitingContent() {
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
         modifier = Modifier.padding(horizontal = screenWidth * 0.1f)
-    )
-}
-
-@Composable
-private fun ErrorContent(errorMessage: String, amount: String) {
-    Text(
-        text = stringResource(id = R.string.payment_failed),
-        style = MaterialTheme.typography.headlineMedium,
-        textAlign = TextAlign.Center,
-        color = MaterialTheme.colorScheme.error
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    Text(
-        text = errorMessage,
-        style = MaterialTheme.typography.bodyLarge,
-        textAlign = TextAlign.Center,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-
-    Spacer(modifier = Modifier.height(24.dp))
-
-    Text(
-        text = amount,
-        style = MaterialTheme.typography.displayLarge,
-        color = MaterialTheme.colorScheme.onSurface,
-        textAlign = TextAlign.Center
     )
 }
 
