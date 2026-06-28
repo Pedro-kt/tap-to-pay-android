@@ -27,6 +27,8 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
     }
 
+    private var lastProcessedTagId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -59,6 +61,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent)
         handleNfcIntent(intent)
     }
 
@@ -74,9 +77,25 @@ class MainActivity : ComponentActivity() {
 
             val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
             if (tag != null) {
-                Log.d(TAG, "NFC Tag detected: ${tag.id.contentToString()}")
+                val tagId = tag.id.contentToString()
+
+                // Prevent processing the same tag multiple times
+                if (tagId == lastProcessedTagId) {
+                    Log.d(TAG, "Tag already processed, skipping")
+                    return
+                }
+
+                lastProcessedTagId = tagId
+                Log.d(TAG, "NFC Tag detected: $tagId")
+
                 lifecycleScope.launch {
                     NfcManager.emitTag(tag)
+                }
+
+                // Clear the processed tag after a delay to allow re-reading
+                lifecycleScope.launch {
+                    kotlinx.coroutines.delay(2000)
+                    lastProcessedTagId = null
                 }
             } else {
                 Log.w(TAG, "NFC Tag is null")
