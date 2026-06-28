@@ -23,4 +23,9 @@
     <!-- Error Screen -->
     <string name="read_failed">Read Failed</string>
     <string name="returning_home">Returning to home…</string>
+
+    <!-- NFC Status -->
+    <string name="nfc_ready">NFC Ready</string>
+    <string name="nfc_disabled">NFC Disabled</string>
+    <string name="nfc_not_supported">NFC Not Supported</string>
 </resources>
