@@ -15,4 +15,8 @@
     <string name="expiration_date">Expiration:</string>
     <string name="card_type">Type:</string>
     <string name="card_detected">Contactless card detected</string>
+
+    <!-- Success Screen -->
+    <string name="card_read">Card Read</string>
+    <string name="opening_details">Opening details…</string>
 </resources>
