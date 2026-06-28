@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
@@ -59,6 +58,7 @@ import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
 fun TapToPayScreen(
     amount: String,
     onCancel: () -> Unit,
+    onSuccess: (CardInfo) -> Unit,
     innerPadding: PaddingValues,
     viewModel: TapToPayViewModel = viewModel()
 ) {
@@ -66,6 +66,13 @@ fun TapToPayScreen(
 
     LaunchedEffect(Unit) {
         viewModel.startWaitingForCard()
+    }
+
+    // Navigate to success screen when card is detected
+    LaunchedEffect(nfcState) {
+        if (nfcState is NfcState.Success) {
+            onSuccess((nfcState as NfcState.Success).cardInfo)
+        }
     }
 
     Column(
@@ -106,11 +113,8 @@ fun TapToPayScreen(
             verticalArrangement = Arrangement.Center
         ) {
             when (nfcState) {
-                is NfcState.Idle, is NfcState.Waiting -> {
+                is NfcState.Idle, is NfcState.Waiting, is NfcState.Success -> {
                     WaitingContent()
-                }
-                is NfcState.Success -> {
-                    SuccessContent((nfcState as NfcState.Success).cardInfo, amount)
                 }
                 is NfcState.Error -> {
                     ErrorContent((nfcState as NfcState.Error).message, amount)
@@ -232,64 +236,6 @@ private fun WaitingContent() {
         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
         modifier = Modifier.padding(horizontal = screenWidth * 0.1f)
     )
-}
-
-@Composable
-private fun SuccessContent(cardInfo: CardInfo, amount: String) {
-    Icon(
-        imageVector = Icons.Default.CheckCircle,
-        contentDescription = "Success",
-        modifier = Modifier.size(80.dp),
-        tint = MaterialTheme.colorScheme.primary
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    Text(
-        text = stringResource(id = R.string.payment_successful),
-        style = MaterialTheme.typography.headlineMedium,
-        textAlign = TextAlign.Center,
-        color = MaterialTheme.colorScheme.primary
-    )
-
-    Spacer(modifier = Modifier.height(24.dp))
-
-    Text(
-        text = amount,
-        style = MaterialTheme.typography.displayLarge,
-        color = MaterialTheme.colorScheme.onSurface,
-        textAlign = TextAlign.Center
-    )
-
-    Spacer(modifier = Modifier.height(32.dp))
-
-    // Card details
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = "${stringResource(id = R.string.card_number)} ${cardInfo.cardNumber}",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "${stringResource(id = R.string.expiration_date)} ${cardInfo.expirationDate}",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "${stringResource(id = R.string.card_type)} ${cardInfo.cardType.name}",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
 }
 
 @Composable
