@@ -38,13 +38,23 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route ?: "home"
 
+                // Hide bottom bar on these screens
+                val shouldShowBottomBar = when {
+                    currentRoute.startsWith("tap_to_pay") -> false
+                    currentRoute.startsWith("success") -> false
+                    currentRoute.startsWith("error") -> false
+                    else -> true
+                }
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        MainBottomBar(
-                            currentRoute = currentRoute,
-                            navController = navController
-                        )
+                        if (shouldShowBottomBar) {
+                            MainBottomBar(
+                                currentRoute = currentRoute,
+                                navController = navController
+                            )
+                        }
                     }
                 ) { innerPadding ->
                     NavGraph(
