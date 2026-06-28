@@ -19,4 +19,8 @@
     <!-- Success Screen -->
     <string name="card_read">Card Read</string>
     <string name="opening_details">Opening details…</string>
+
+    <!-- Error Screen -->
+    <string name="read_failed">Read Failed</string>
+    <string name="returning_home">Returning to home…</string>
 </resources>
