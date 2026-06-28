@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">Tap to Pay Android</string>
+
+    <!-- Tap to Pay Screen -->
+    <string name="payment_title">Payment</string>
+    <string name="total_label">Total</string>
+    <string name="tap_to_pay_instruction">Bring card closer</string>
+    <string name="tap_to_pay_description">Hold the card or phone behind the device</string>
+    <string name="cancel_payment">Cancel Payment</string>
+    <string name="waiting_for_card">Waiting for card…</string>
+    <string name="payment_successful">Card Detected!</string>
+    <string name="payment_failed">Payment Failed</string>
+    <string name="try_again">Try Again</string>
+    <string name="card_number">Card:</string>
+    <string name="expiration_date">Expiration:</string>
+    <string name="card_type">Type:</string>
+    <string name="card_detected">Contactless card detected</string>
+
+    <!-- Success Screen -->
+    <string name="card_read">Card Read</string>
+    <string name="opening_details">Opening details…</string>
+
+    <!-- Error Screen -->
+    <string name="read_failed">Read Failed</string>
+    <string name="returning_home">Returning to home…</string>
 </resources>

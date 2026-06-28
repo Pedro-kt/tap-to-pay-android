@@ -33,8 +33,8 @@ fun MainBottomBar(
             tonalElevation = 0.dp
         ) {
             val itemColors = NavigationBarItemDefaults.colors(
-                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                indicatorColor = MaterialTheme.colorScheme.primary,
+                selectedIconColor = MaterialTheme.colorScheme.onPrimary,
             )
 
             NavigationBarItem(
