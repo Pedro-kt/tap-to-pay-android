@@ -45,7 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.yumedev.taptopayandroid.R
-import com.yumedev.taptopayandroid.domain.model.CardInfo
+import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.CardType
 import com.yumedev.taptopayandroid.presentation.ui.theme.md_dark_success
 import com.yumedev.taptopayandroid.presentation.ui.theme.md_light_success
@@ -54,7 +54,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SuccessScreen(
     amount: String,
-    cardInfo: CardInfo,
+    emvCardData: EmvCardData,
     innerPadding: PaddingValues,
     onNavigateToDetails: () -> Unit
 ) {
@@ -145,10 +145,10 @@ fun SuccessScreen(
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            append(getCardTypeName(cardInfo.cardType))
+                            append(getCardTypeName(emvCardData.cardType))
                             append(" ")
                             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append("•••• ${cardInfo.cardNumber.takeLast(4)}")
+                                append("•••• ${emvCardData.cardholderData.panLastFour}")
                             }
                         },
                         style = MaterialTheme.typography.bodyLarge,
@@ -203,6 +203,7 @@ private fun getCardTypeName(cardType: CardType): String {
         CardType.MASTERCARD -> "Mastercard"
         CardType.AMEX -> "American Express"
         CardType.DISCOVER -> "Discover"
+        CardType.MAESTRO -> "Maestro"
         CardType.UNKNOWN -> "Card"
     }
 }

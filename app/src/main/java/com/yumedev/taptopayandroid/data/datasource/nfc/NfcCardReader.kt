@@ -3,8 +3,8 @@ package com.yumedev.taptopayandroid.data.datasource.nfc
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
-import com.yumedev.taptopayandroid.domain.model.CardInfo
-import com.yumedev.taptopayandroid.domain.model.CardType
+import com.yumedev.taptopayandroid.data.parser.EmvTagParser
+import com.yumedev.taptopayandroid.domain.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -15,8 +15,12 @@ class NfcCardReader {
         private const val TAG = "NfcCardReader"
     }
 
-    suspend fun readCard(tag: Tag): Result<CardInfo> = withContext(Dispatchers.IO) {
+    suspend fun readCard(tag: Tag, amountCents: Long? = null): Result<EmvCardData> = withContext(Dispatchers.IO) {
         var isoDep: IsoDep? = null
+        val apduCommands = mutableListOf<ApduCommand>()
+        val allRecords = mutableListOf<ByteArray>()
+        var commandSequence = 1
+
         try {
             isoDep = IsoDep.get(tag)
             if (isoDep == null) {
@@ -43,6 +47,17 @@ class NfcCardReader {
             )
 
             val ppseResponse = isoDep.transceive(ppseCommand)
+
+            apduCommands.add(ApduCommand(
+                sequence = commandSequence++,
+                name = "SELECT PPSE",
+                description = "Select Proximity Payment System Environment",
+                commandApdu = ppseCommand.toHexString(),
+                responseApdu = ppseResponse.toHexString(),
+                statusWord = getStatusWord(ppseResponse),
+                statusDescription = getStatusDescription(ppseResponse)
+            ))
+
             Log.d(TAG, "PPSE Response: ${ppseResponse.toHexString()}")
 
             if (!isSuccessResponse(ppseResponse)) {
@@ -50,12 +65,23 @@ class NfcCardReader {
             }
 
             // Step 2: Extract AID from PPSE response
-            val aid = extractAID(ppseResponse) ?: return@withContext Result.failure(Exception("No AID found in PPSE response"))
-            Log.d(TAG, "Found AID: ${aid.toHexString()}")
+            val aidBytes = extractAID(ppseResponse) ?: return@withContext Result.failure(Exception("No AID found in PPSE response"))
+            Log.d(TAG, "Found AID: ${aidBytes.toHexString()}")
 
             // Step 3: Select the payment application using AID
-            val selectAidCommand = buildSelectCommand(aid)
+            val selectAidCommand = buildSelectCommand(aidBytes)
             val aidResponse = isoDep.transceive(selectAidCommand)
+
+            apduCommands.add(ApduCommand(
+                sequence = commandSequence++,
+                name = "SELECT AID",
+                description = "Select payment application",
+                commandApdu = selectAidCommand.toHexString(),
+                responseApdu = aidResponse.toHexString(),
+                statusWord = getStatusWord(aidResponse),
+                statusDescription = getStatusDescription(aidResponse)
+            ))
+
             Log.d(TAG, "AID Response: ${aidResponse.toHexString()}")
 
             if (!isSuccessResponse(aidResponse)) {
@@ -102,18 +128,25 @@ class NfcCardReader {
             Log.d(TAG, "GPO Command: ${gpoCommand.toHexString()}")
 
             val gpoResponse = isoDep.transceive(gpoCommand)
+
+            apduCommands.add(ApduCommand(
+                sequence = commandSequence++,
+                name = "GET PROCESSING OPTIONS",
+                description = "Request card processing options",
+                commandApdu = gpoCommand.toHexString(),
+                responseApdu = gpoResponse.toHexString(),
+                statusWord = getStatusWord(gpoResponse),
+                statusDescription = getStatusDescription(gpoResponse)
+            ))
+
             Log.d(TAG, "GPO Response: ${gpoResponse.toHexString()}")
 
-            var cardNumber = "**** **** **** ****"
-            var expirationDate = "**/**"
-
             if (isSuccessResponse(gpoResponse)) {
-                cardNumber = extractCardNumber(gpoResponse)
-                expirationDate = extractExpirationDate(gpoResponse)
+                allRecords.add(gpoResponse)
 
                 // Parse AFL (Application File Locator) from GPO response
                 val afl = findTag(gpoResponse, 0x94.toByte())
-                if (afl != null && cardNumber == "**** **** **** ****") {
+                if (afl != null) {
                     // Read records from AFL
                     var i = 0
                     while (i + 3 < afl.size) {
@@ -130,23 +163,26 @@ class NfcCardReader {
                                     0x00.toByte()
                                 )
                                 val recordResponse = isoDep.transceive(readRecordCommand)
+
+                                apduCommands.add(ApduCommand(
+                                    sequence = commandSequence++,
+                                    name = "READ RECORD - SFI $sfi #$record",
+                                    description = "Read application data from SFI $sfi, record $record",
+                                    commandApdu = readRecordCommand.toHexString(),
+                                    responseApdu = recordResponse.toHexString(),
+                                    statusWord = getStatusWord(recordResponse),
+                                    statusDescription = getStatusDescription(recordResponse)
+                                ))
+
                                 Log.d(TAG, "Record SFI=$sfi Rec=$record: ${recordResponse.toHexString()}")
 
                                 if (isSuccessResponse(recordResponse)) {
-                                    val tempNumber = extractCardNumber(recordResponse)
-                                    val tempDate = extractExpirationDate(recordResponse)
-
-                                    if (tempNumber != "**** **** **** ****") {
-                                        cardNumber = tempNumber
-                                        expirationDate = tempDate
-                                        break
-                                    }
+                                    allRecords.add(recordResponse)
                                 }
                             } catch (e: Exception) {
                                 Log.d(TAG, "Failed to read SFI=$sfi Rec=$record: ${e.message}")
                             }
                         }
-                        if (cardNumber != "**** **** **** ****") break
                         i += 4
                     }
                 }
@@ -154,9 +190,8 @@ class NfcCardReader {
                 Log.w(TAG, "GPO failed with status: ${gpoResponse.toHexString()}")
             }
 
-            // If still not found, try reading records manually
-            // Try SFI 2 first (most common for Visa/Mastercard), then others
-            if (cardNumber == "**** **** **** ****") {
+            // Fallback: Manual record reading if needed
+            if (allRecords.size <= 1) {
                 Log.d(TAG, "Attempting manual record read...")
                 val sfiOrder = listOf(2, 1, 3, 4) // Try SFI 2 first
 
@@ -172,21 +207,21 @@ class NfcCardReader {
                             val recordResponse = isoDep.transceive(readRecordCommand)
 
                             if (isSuccessResponse(recordResponse)) {
-                                Log.d(TAG, "Record SFI=$sfi Rec=$record (${recordResponse.size} bytes)")
-                                val tempNumber = extractCardNumber(recordResponse)
-                                val tempDate = extractExpirationDate(recordResponse)
+                                apduCommands.add(ApduCommand(
+                                    sequence = commandSequence++,
+                                    name = "READ RECORD - SFI $sfi #$record",
+                                    description = "Manual read from SFI $sfi, record $record",
+                                    commandApdu = readRecordCommand.toHexString(),
+                                    responseApdu = recordResponse.toHexString(),
+                                    statusWord = getStatusWord(recordResponse),
+                                    statusDescription = getStatusDescription(recordResponse)
+                                ))
 
-                                if (tempNumber != "**** **** **** ****") {
-                                    Log.d(TAG, "Found PAN in SFI=$sfi Rec=$record")
-                                    cardNumber = tempNumber
-                                    expirationDate = tempDate
-                                    break
-                                }
+                                allRecords.add(recordResponse)
+                                Log.d(TAG, "Record SFI=$sfi Rec=$record (${recordResponse.size} bytes)")
                             } else {
-                                // Don't log every failure to reduce noise
-                                if (record == 1) { // Only log first record failure per SFI
-                                    val sw = recordResponse.takeLast(2)
-                                    Log.d(TAG, "SFI=$sfi not available: ${sw.toByteArray().toHexString()}")
+                                if (record == 1) {
+                                    Log.d(TAG, "SFI=$sfi not available")
                                 }
                                 break // If record 1 fails, skip rest of this SFI
                             }
@@ -197,46 +232,23 @@ class NfcCardReader {
                             break // If record 1 errors, skip rest of this SFI
                         }
                     }
-                    if (cardNumber != "**** **** **** ****") break
                 }
             }
 
-            // Determine card type from AID or card name in response
-            var cardType = determineCardType(cardNumber)
+            // Parse all data using EmvTagParser
+            val applicationInfo = EmvTagParser.parseApplicationInfo(aidBytes, aidResponse)
+            val transactionData = EmvTagParser.parseTransactionData(allRecords, amountCents)
+            val cardholderData = EmvTagParser.parseCardholderData(allRecords)
 
-            // If card number seems invalid (encrypted), try to determine type from AID response
-            if (cardNumber.startsWith("0") || cardNumber.contains("****")) {
-                // Look for card name in AID response (tag 0x50 - Application Label)
-                val appLabel = findTag(aidResponse, 0x50.toByte())
-                if (appLabel != null) {
-                    val label = String(appLabel, Charsets.UTF_8)
-                    Log.d(TAG, "Application Label: $label")
-                    cardType = when {
-                        label.contains("VISA", ignoreCase = true) -> CardType.VISA
-                        label.contains("MASTERCARD", ignoreCase = true) -> CardType.MASTERCARD
-                        label.contains("AMEX", ignoreCase = true) -> CardType.AMEX
-                        else -> cardType
-                    }
-                }
-
-                // For encrypted cards, show masked number with last 4 digits if available
-                if (cardNumber != "**** **** **** ****" && !cardNumber.startsWith("****")) {
-                    val digits = cardNumber.replace(" ", "")
-                    if (digits.length >= 4) {
-                        cardNumber = "**** **** **** ${digits.takeLast(4)}"
-                    }
-                }
-            }
-
-            val cardInfo = CardInfo(
-                cardNumber = cardNumber,
-                expirationDate = expirationDate,
-                cardType = cardType,
-                rawData = aidResponse.toHexString()
+            val emvCardData = EmvCardData(
+                applicationInfo = applicationInfo,
+                transactionData = transactionData,
+                cardholderData = cardholderData,
+                apduCommands = apduCommands
             )
 
-            Log.d(TAG, "Card read successfully: $cardInfo")
-            Result.success(cardInfo)
+            Log.d(TAG, "Card read successfully")
+            Result.success(emvCardData)
 
         } catch (e: IOException) {
             Log.e(TAG, "IO Error reading card", e)
@@ -318,28 +330,27 @@ class NfcCardReader {
         return sw1 == 0x90 && sw2 == 0x00
     }
 
-    private fun extractCardNumber(response: ByteArray): String {
-        // ATENTION: EMV data is complex and can vary between cards. This function attempts to extract the PAN (Primary Account Number) from common tags.
-        // This is a simplified extraction and may not work for all cards. In production, consider using a proper EMV parsing library.
+    private fun getStatusWord(response: ByteArray): String {
+        if (response.size < 2) return "N/A"
+        val sw1 = response[response.size - 2]
+        val sw2 = response[response.size - 1]
+        return String.format("%02X %02X", sw1, sw2)
+    }
 
-        // Try tag 0x5A (Application Primary Account Number) first
-        var cardNumber = findTag(response, 0x5A.toByte())
-        if (cardNumber != null) {
-            Log.d(TAG, "Found tag 0x5A (PAN): ${cardNumber.toHexString()}")
-            return formatCardNumber(cardNumber)
+    private fun getStatusDescription(response: ByteArray): String {
+        if (response.size < 2) return "Invalid response"
+        val sw1 = response[response.size - 2].toInt() and 0xFF
+        val sw2 = response[response.size - 1].toInt() and 0xFF
+
+        return when {
+            sw1 == 0x90 && sw2 == 0x00 -> "OK"
+            sw1 == 0x6A && sw2 == 0x82 -> "File not found"
+            sw1 == 0x6A && sw2 == 0x81 -> "Function not supported"
+            sw1 == 0x69 && sw2 == 0x85 -> "Conditions not satisfied"
+            sw1 == 0x6D && sw2 == 0x00 -> "Instruction not supported"
+            sw1 == 0x6E && sw2 == 0x00 -> "Class not supported"
+            else -> String.format("Error: %02X %02X", sw1, sw2)
         }
-
-        // Try tag 0x57 (Track 2 Equivalent Data)
-        cardNumber = findTag(response, 0x57.toByte())
-        if (cardNumber != null) {
-            Log.d(TAG, "Found tag 0x57 (Track 2): ${cardNumber.toHexString()}")
-            // Track 2 format: PAN + separator (D or =) + expiry + service code
-            return formatCardNumberFromTrack2(cardNumber)
-        }
-
-        Log.d(TAG, "No PAN found in response")
-        // Fallback: return masked number
-        return "**** **** **** ****"
     }
 
     private fun findTag(data: ByteArray, tag: Byte): ByteArray? {
@@ -368,114 +379,6 @@ class NfcCardReader {
             i++
         }
         return null
-    }
-
-    private fun formatCardNumberFromTrack2(track2Data: ByteArray): String {
-        val digits = StringBuilder()
-        for (byte in track2Data) {
-            val high = (byte.toInt() shr 4) and 0x0F
-            val low = byte.toInt() and 0x0F
-
-            if (high == 0xD || high == 0xF) break // Separator or padding
-            if (high in 0..9) digits.append(high)
-
-            if (low == 0xD || low == 0xF) break
-            if (low in 0..9) digits.append(low)
-        }
-
-        val cardNumber = digits.toString()
-        if (cardNumber.length >= 13) {
-            return cardNumber.take(16).chunked(4).joinToString(" ")
-        }
-        return "**** **** **** ****"
-    }
-
-    private fun formatCardNumber(panBytes: ByteArray): String {
-        val digits = StringBuilder()
-        for (byte in panBytes) {
-            val high = (byte.toInt() shr 4) and 0x0F
-            val low = byte.toInt() and 0x0F
-            if (high in 0..9) digits.append(high)
-            if (low in 0..9) digits.append(low)
-        }
-
-        val cardNumber = digits.toString()
-        if (cardNumber.length >= 13) {
-            return cardNumber.chunked(4).joinToString(" ").take(19)
-        }
-        return "**** **** **** ${cardNumber.takeLast(4)}"
-    }
-
-    private fun extractExpirationDate(response: ByteArray): String {
-        // Look for expiration date tag 0x5F24 (Application Expiration Date)
-        // Format: YYMMDD
-        val expiryTag1 = 0x5F.toByte()
-        val expiryTag2 = 0x24.toByte()
-
-        var i = 0
-        while (i < response.size - 2) {
-            if (response[i] == expiryTag1 && response[i + 1] == expiryTag2) {
-                val length = response[i + 2].toInt() and 0xFF
-                if (i + 3 + length <= response.size && length == 3) {
-                    val dateBytes = response.copyOfRange(i + 3, i + 3 + length)
-                    val year = String.format("%02X", dateBytes[0])
-                    val month = String.format("%02X", dateBytes[1])
-                    return "$month/$year"
-                }
-            }
-            i++
-        }
-
-        // Try to extract from Track 2 data if available
-        val track2Data = findTag(response, 0x57.toByte())
-        if (track2Data != null) {
-            return extractExpiryFromTrack2(track2Data)
-        }
-
-        return "**/**"
-    }
-
-    private fun extractExpiryFromTrack2(track2Data: ByteArray): String {
-        val digits = StringBuilder()
-        var foundSeparator = false
-
-        for (byte in track2Data) {
-            val high = (byte.toInt() shr 4) and 0x0F
-            val low = byte.toInt() and 0x0F
-
-            if (!foundSeparator) {
-                if (high == 0xD) {
-                    foundSeparator = true
-                }
-                continue
-            }
-
-            // After separator, next 4 digits are YYMM
-            if (high in 0..9) digits.append(high)
-            if (low in 0..9) digits.append(low)
-
-            if (digits.length >= 4) {
-                val year = digits.substring(0, 2)
-                val month = digits.substring(2, 4)
-                return "$month/$year"
-            }
-        }
-
-        return "**/**"
-    }
-
-    private fun determineCardType(cardNumber: String): CardType {
-        val digits = cardNumber.replace(" ", "").replace("*", "")
-        if (digits.isEmpty()) return CardType.UNKNOWN
-
-        return when {
-            // This is a simplified determination based on common card number prefixes
-            digits.startsWith("4") -> CardType.VISA
-            digits.startsWith("5") -> CardType.MASTERCARD
-            digits.startsWith("34") || digits.startsWith("37") -> CardType.AMEX
-            digits.startsWith("6011") || digits.startsWith("65") -> CardType.DISCOVER
-            else -> CardType.UNKNOWN
-        }
     }
 
     private fun ByteArray.toHexString(): String {

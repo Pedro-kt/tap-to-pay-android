@@ -7,8 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.yumedev.taptopayandroid.domain.model.CardInfo
-import com.yumedev.taptopayandroid.domain.model.CardType
+import com.yumedev.taptopayandroid.domain.model.*
 import com.yumedev.taptopayandroid.presentation.ui.screens.ErrorScreen
 import com.yumedev.taptopayandroid.presentation.ui.screens.HistoryScreen
 import com.yumedev.taptopayandroid.presentation.ui.screens.HomeScreen
@@ -46,12 +45,12 @@ fun NavGraph(
                 onCancel = {
                     navController.popBackStack()
                 },
-                onSuccess = { cardInfo ->
+                onSuccess = { emvCardData ->
                     navController.navigate(
                         NavigationRoutes.Success.createRoute(
                             amount = amount,
-                            cardNumber = cardInfo.cardNumber,
-                            cardType = cardInfo.cardType.name
+                            cardNumber = emvCardData.cardholderData.panLastFour,
+                            cardType = emvCardData.cardType.name
                         )
                     ) {
                         // Remove TapToPay from back stack
@@ -102,16 +101,26 @@ fun NavGraph(
                 CardType.UNKNOWN
             }
 
-            // Create a CardInfo object with the received data
-            val cardInfo = CardInfo(
-                cardNumber = cardNumber,
-                expirationDate = "", // Not needed for success screen
-                cardType = cardType
+            // Create a temporary EmvCardData object with the received data
+            // TODO: Replace this with actual EmvCardData from ViewModel
+            val emvCardData = EmvCardData(
+                applicationInfo = ApplicationInfo(
+                    aid = "",
+                    aidBytes = byteArrayOf(),
+                    cardType = cardType
+                ),
+                transactionData = TransactionData(),
+                cardholderData = CardholderData(
+                    pan = cardNumber,
+                    panLastFour = cardNumber.takeLast(4),
+                    expirationDate = "",
+                    expirationDateDisplay = ""
+                )
             )
 
             SuccessScreen(
                 amount = amount,
-                cardInfo = cardInfo,
+                emvCardData = emvCardData,
                 innerPadding = innerPadding,
                 onNavigateToDetails = {
                     // Navigate back to home for now
