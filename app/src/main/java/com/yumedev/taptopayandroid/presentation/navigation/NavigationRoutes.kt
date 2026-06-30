@@ -13,4 +13,5 @@ sealed class NavigationRoutes(val route: String) {
     data object Error : NavigationRoutes("error/{amount}/{errorMessage}") {
         fun createRoute(amount: String, errorMessage: String) = "error/$amount/$errorMessage"
     }
+    data object CardDetail : NavigationRoutes("card_detail")
 }

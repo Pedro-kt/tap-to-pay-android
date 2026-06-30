@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumedev.taptopayandroid.data.datasource.nfc.NfcManager
 import com.yumedev.taptopayandroid.data.repository.NfcRepositoryImpl
+import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.NfcState
 import com.yumedev.taptopayandroid.domain.repository.NfcRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,10 @@ class TapToPayViewModel(
 
     private val _nfcState = MutableStateFlow<NfcState>(NfcState.Waiting)
     val nfcState: StateFlow<NfcState> = _nfcState.asStateFlow()
+
+    // Store last successful card data for detail screen
+    private val _lastEmvCardData = MutableStateFlow<EmvCardData?>(null)
+    val lastEmvCardData: StateFlow<EmvCardData?> = _lastEmvCardData.asStateFlow()
 
     init {
         // Listen to NFC tags from MainActivity
@@ -38,8 +43,9 @@ class TapToPayViewModel(
             val result = nfcRepository.readCard(tag)
 
             _nfcState.value = result.fold(
-                onSuccess = { cardInfo ->
-                    NfcState.Success(cardInfo)
+                onSuccess = { emvCardData ->
+                    _lastEmvCardData.value = emvCardData
+                    NfcState.Success(emvCardData)
                 },
                 onFailure = { exception ->
                     NfcState.Error(exception.message ?: "Unknown error reading card")
