@@ -1,5 +1,7 @@
 package com.yumedev.taptopayandroid.presentation.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 import java.util.Calendar
+import androidx.core.net.toUri
 
 enum class ThemeOption {
     LIGHT, DARK, SYSTEM
@@ -183,7 +186,11 @@ fun SettingsScreen(
                     icon = Icons.Outlined.Code,
                     title = stringResource(R.string.developer_title),
                     subtitle = stringResource(R.string.developer_subtitle),
-                    onClick = { }
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW,
+                            "https://${context.getString(R.string.developer_github)}".toUri())
+                        context.startActivity(intent)
+                    }
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(start = 56.dp),
@@ -193,8 +200,11 @@ fun SettingsScreen(
                     icon = Icons.Outlined.OpenInNew,
                     title = stringResource(R.string.repository_title),
                     subtitle = stringResource(R.string.repository_url),
-                    showChevron = false,
-                    onClick = { }
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW,
+                            "https://${context.getString(R.string.repository_url)}".toUri())
+                        context.startActivity(intent)
+                    }
                 )
             }
         }
