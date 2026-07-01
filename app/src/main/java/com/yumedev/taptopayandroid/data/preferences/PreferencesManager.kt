@@ -13,7 +13,6 @@ class PreferencesManager(context: Context) {
     companion object {
         private const val PREFS_NAME = "tap_to_pay_preferences"
         private const val KEY_SOUND_ENABLED = "sound_enabled"
-        private const val KEY_VIBRATION_ENABLED = "vibration_enabled"
 
         @Volatile
         private var instance: PreferencesManager? = null
@@ -31,8 +30,4 @@ class PreferencesManager(context: Context) {
     var isSoundEnabled: Boolean
         get() = sharedPreferences.getBoolean(KEY_SOUND_ENABLED, true)
         set(value) = sharedPreferences.edit().putBoolean(KEY_SOUND_ENABLED, value).apply()
-
-    var isVibrationEnabled: Boolean
-        get() = sharedPreferences.getBoolean(KEY_VIBRATION_ENABLED, false)
-        set(value) = sharedPreferences.edit().putBoolean(KEY_VIBRATION_ENABLED, value).apply()
 }

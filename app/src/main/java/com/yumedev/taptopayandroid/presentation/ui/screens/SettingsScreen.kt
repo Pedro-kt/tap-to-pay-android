@@ -25,7 +25,6 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Splitscreen
-import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.VolumeUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -71,7 +70,6 @@ fun SettingsScreen(
 
     var selectedTheme by remember { mutableStateOf(ThemeOption.LIGHT) }
     var soundEnabled by remember { mutableStateOf(preferencesManager.isSoundEnabled) }
-    var vibrationEnabled by remember { mutableStateOf(preferencesManager.isVibrationEnabled) }
     var rawLogsEnabled by remember { mutableStateOf(true) }
 
     LazyColumn(
@@ -121,20 +119,6 @@ fun SettingsScreen(
                     onCheckedChange = {
                         soundEnabled = it
                         preferencesManager.isSoundEnabled = it
-                    }
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(start = 56.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
-                SettingsItemSwitch(
-                    icon = Icons.Outlined.Vibration,
-                    title = stringResource(R.string.vibration_on_detect_title),
-                    subtitle = stringResource(R.string.vibration_on_detect_subtitle),
-                    checked = vibrationEnabled,
-                    onCheckedChange = {
-                        vibrationEnabled = it
-                        preferencesManager.isVibrationEnabled = it
                     }
                 )
             }
