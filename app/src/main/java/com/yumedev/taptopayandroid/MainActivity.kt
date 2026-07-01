@@ -8,14 +8,19 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.yumedev.taptopayandroid.data.datasource.nfc.NfcManager
+import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 import com.yumedev.taptopayandroid.presentation.navigation.NavGraph
 import com.yumedev.taptopayandroid.presentation.ui.components.MainBottomBar
 import com.yumedev.taptopayandroid.presentation.ui.theme.TapToPayAndroidTheme
@@ -33,7 +38,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TapToPayAndroidTheme {
+            val preferencesManager = remember { PreferencesManager.getInstance(this) }
+            val systemInDarkTheme = isSystemInDarkTheme()
+            var themeMode by remember { mutableStateOf(preferencesManager.themeMode) }
+
+            val darkTheme = when (themeMode) {
+                PreferencesManager.THEME_LIGHT -> false
+                PreferencesManager.THEME_DARK -> true
+                PreferencesManager.THEME_SYSTEM -> systemInDarkTheme
+                else -> systemInDarkTheme
+            }
+
+            val onThemeChanged: (String) -> Unit = { newTheme ->
+                themeMode = newTheme
+                preferencesManager.themeMode = newTheme
+            }
+
+            TapToPayAndroidTheme(darkTheme = darkTheme) {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route ?: "home"
@@ -60,7 +81,8 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavGraph(
                         navController = navController,
-                        innerPadding = innerPadding
+                        innerPadding = innerPadding,
+                        onThemeChanged = onThemeChanged
                     )
                 }
             }

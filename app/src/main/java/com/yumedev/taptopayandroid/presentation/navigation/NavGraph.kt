@@ -26,7 +26,8 @@ import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    onThemeChanged: (String) -> Unit = {}
 ) {
     // Shared ViewModel across navigation
     val sharedViewModel: TapToPayViewModel = viewModel()
@@ -98,7 +99,10 @@ fun NavGraph(
         }
 
         composable(route = NavigationRoutes.Settings.route) {
-            SettingsScreen(innerPadding = innerPadding)
+            SettingsScreen(
+                innerPadding = innerPadding,
+                onThemeChanged = onThemeChanged
+            )
         }
 
         composable(

@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.Splitscreen
 import androidx.compose.material.icons.outlined.VolumeUp
 import androidx.compose.material3.HorizontalDivider
@@ -57,7 +58,8 @@ enum class ThemeOption {
 
 @Composable
 fun SettingsScreen(
-    innerPadding: PaddingValues = PaddingValues()
+    innerPadding: PaddingValues = PaddingValues(),
+    onThemeChanged: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val packageInfo = remember {
@@ -68,7 +70,14 @@ fun SettingsScreen(
 
     val preferencesManager = remember { PreferencesManager.getInstance(context) }
 
-    var selectedTheme by remember { mutableStateOf(ThemeOption.LIGHT) }
+    val initialTheme = when (preferencesManager.themeMode) {
+        PreferencesManager.THEME_LIGHT -> ThemeOption.LIGHT
+        PreferencesManager.THEME_DARK -> ThemeOption.DARK
+        PreferencesManager.THEME_SYSTEM -> ThemeOption.SYSTEM
+        else -> ThemeOption.SYSTEM
+    }
+
+    var selectedTheme by remember { mutableStateOf(initialTheme) }
     var soundEnabled by remember { mutableStateOf(preferencesManager.isSoundEnabled) }
     var rawLogsEnabled by remember { mutableStateOf(true) }
 
@@ -98,7 +107,15 @@ fun SettingsScreen(
                 ) {
                     ThemeSelector(
                         selectedTheme = selectedTheme,
-                        onThemeSelected = { selectedTheme = it },
+                        onThemeSelected = { newTheme ->
+                            selectedTheme = newTheme
+                            val themeMode = when (newTheme) {
+                                ThemeOption.LIGHT -> PreferencesManager.THEME_LIGHT
+                                ThemeOption.DARK -> PreferencesManager.THEME_DARK
+                                ThemeOption.SYSTEM -> PreferencesManager.THEME_SYSTEM
+                            }
+                            onThemeChanged(themeMode)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 12.dp)
@@ -447,7 +464,7 @@ private fun ThemeSelector(
 
             ThemeOption(
                 text = stringResource(R.string.theme_system),
-                icon = null,
+                icon = Icons.Outlined.PhoneAndroid,
                 isSelected = selectedTheme == ThemeOption.SYSTEM,
                 onClick = { onThemeSelected(ThemeOption.SYSTEM) },
                 modifier = Modifier.weight(1f),
