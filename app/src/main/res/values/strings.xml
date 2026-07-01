@@ -56,4 +56,31 @@
 
     <!-- No Data -->
     <string name="no_card_data_available">No card data available</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Settings</string>
+    <string name="appearance_section">APPEARANCE</string>
+    <string name="theme_title">Application theme</string>
+    <string name="theme_subtitle">Choose the interface theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System</string>
+    <string name="sound_vibration_section">SOUND &amp; VIBRATION</string>
+    <string name="sound_on_detect_title">Sound on card detect</string>
+    <string name="sound_on_detect_subtitle">Play a sound when tapping</string>
+    <string name="vibration_on_detect_title">Vibration on detect</string>
+    <string name="vibration_on_detect_subtitle">Haptic pulse when reading card</string>
+    <string name="developer_mode_section">DEVELOPER MODE</string>
+    <string name="raw_nfc_logs_title">Raw NFC logs</string>
+    <string name="raw_nfc_logs_subtitle">Capture every exchanged APDU</string>
+    <string name="detail_level_title">Detail level</string>
+    <string name="detail_level_subtitle">Information included in each log</string>
+    <string name="detail_level_detailed">Detailed</string>
+    <string name="about_section">ABOUT</string>
+    <string name="version_title">Version</string>
+    <string name="developer_title">Developer</string>
+    <string name="developer_subtitle">Bustamante Pedro</string>
+    <string name="developer_github">github.com/Pedro-kt</string>
+    <string name="repository_title">Repository</string>
+    <string name="repository_url">github.com/Pedro-kt/tap-to-pay-android</string>
 </resources>
