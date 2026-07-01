@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.yumedev.taptopayandroid.R
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -33,6 +36,11 @@ fun NavGraph(
         startDestination = NavigationRoutes.Home.route
     ) {
         composable(route = NavigationRoutes.Home.route) {
+
+            LaunchedEffect(Unit) {
+                sharedViewModel.clearStateOnly()
+            }
+
             HomeScreen(
                 onGeneratePayment = { amount ->
                     navController.navigate(NavigationRoutes.TapToPay.createRoute(amount))
@@ -102,39 +110,25 @@ fun NavGraph(
             )
         ) { backStackEntry ->
             val amount = backStackEntry.arguments?.getString("amount") ?: "$0.00"
-            val cardNumber = backStackEntry.arguments?.getString("cardNumber") ?: ""
-            val cardTypeString = backStackEntry.arguments?.getString("cardType") ?: "UNKNOWN"
-            val cardType = try {
-                CardType.valueOf(cardTypeString)
-            } catch (e: IllegalArgumentException) {
-                CardType.UNKNOWN
-            }
+            val emvCardData by sharedViewModel.lastEmvCardData.collectAsState()
 
-            // Create a temporary EmvCardData object with the received data
-            // TODO: Replace this with actual EmvCardData from ViewModel
-            val emvCardData = EmvCardData(
-                applicationInfo = ApplicationInfo(
-                    aid = "",
-                    aidBytes = byteArrayOf(),
-                    cardType = cardType
-                ),
-                transactionData = TransactionData(),
-                cardholderData = CardholderData(
-                    pan = cardNumber,
-                    panLastFour = cardNumber.takeLast(4),
-                    expirationDate = "",
-                    expirationDateDisplay = ""
+            emvCardData?.let { data ->
+                SuccessScreen(
+                    amount = amount,
+                    emvCardData = data,
+                    innerPadding = innerPadding,
+                    onNavigateToDetails = {
+                        navController.navigate(NavigationRoutes.CardDetail.route) {
+                            popUpTo(NavigationRoutes.Home.route) {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    onBack = {
+                        navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
+                    }
                 )
-            )
-
-            SuccessScreen(
-                amount = amount,
-                emvCardData = emvCardData,
-                innerPadding = innerPadding,
-                onNavigateToDetails = {
-                    navController.navigate(NavigationRoutes.CardDetail.route)
-                }
-            )
+            }
         }
 
         composable(
@@ -160,14 +154,15 @@ fun NavGraph(
 
         composable(route = NavigationRoutes.CardDetail.route) {
             val emvCardData by sharedViewModel.lastEmvCardData.collectAsState()
+            val amount by sharedViewModel.lastAmount.collectAsState()
 
             emvCardData?.let { data ->
                 CardDetailScreen(
                     emvCardData = data,
-                    amount = "$0.00", // TODO: Pass actual amount through navigation
+                    amount = amount,
                     innerPadding = innerPadding,
                     onBack = {
-                        navController.popBackStack()
+                        navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
                     }
                 )
             } ?: run {
@@ -178,7 +173,7 @@ fun NavGraph(
                         .padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("No card data available")
+                    Text(stringResource(R.string.no_card_data_available))
                 }
             }
         }

@@ -64,7 +64,7 @@ fun TapToPayScreen(
     val nfcState by viewModel.nfcState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.startWaitingForCard()
+        viewModel.startNewTransaction(amount)
     }
 
     // Navigate to success or error screen based on state

@@ -24,6 +24,10 @@ class TapToPayViewModel(
     private val _lastEmvCardData = MutableStateFlow<EmvCardData?>(null)
     val lastEmvCardData: StateFlow<EmvCardData?> = _lastEmvCardData.asStateFlow()
 
+    // Store last transaction amount
+    private val _lastAmount = MutableStateFlow("0.00")
+    val lastAmount: StateFlow<String> = _lastAmount.asStateFlow()
+
     init {
         // Listen to NFC tags from MainActivity
         viewModelScope.launch {
@@ -35,6 +39,10 @@ class TapToPayViewModel(
 
     fun startWaitingForCard() {
         _nfcState.value = NfcState.Waiting
+    }
+
+    fun setAmount(amount: String) {
+        _lastAmount.value = amount
     }
 
     private fun processNfcTag(tag: Tag) {
@@ -56,5 +64,14 @@ class TapToPayViewModel(
 
     fun resetState() {
         _nfcState.value = NfcState.Waiting
+    }
+
+    fun clearStateOnly() {
+        _nfcState.value = NfcState.Waiting
+    }
+
+    fun startNewTransaction(amount: String) {
+        _nfcState.value = NfcState.Waiting
+        _lastAmount.value = amount
     }
 }

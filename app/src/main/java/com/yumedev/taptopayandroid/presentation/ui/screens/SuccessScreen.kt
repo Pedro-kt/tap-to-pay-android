@@ -1,5 +1,6 @@
 package com.yumedev.taptopayandroid.presentation.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -60,9 +61,12 @@ fun SuccessScreen(
     amount: String,
     emvCardData: EmvCardData,
     innerPadding: PaddingValues,
-    onNavigateToDetails: () -> Unit
+    onNavigateToDetails: () -> Unit,
+    onBack: () -> Unit = {}
 ) {
     val isDarkTheme = isSystemInDarkTheme()
+
+    BackHandler(onBack = onBack)
 
     // Auto-navigate after 3 seconds
     LaunchedEffect(Unit) {
