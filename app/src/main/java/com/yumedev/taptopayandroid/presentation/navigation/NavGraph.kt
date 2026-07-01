@@ -154,13 +154,10 @@ fun NavGraph(
 
         composable(route = NavigationRoutes.CardDetail.route) {
             val emvCardData by sharedViewModel.lastEmvCardData.collectAsState()
-            val amount by sharedViewModel.lastAmount.collectAsState()
 
             emvCardData?.let { data ->
                 CardDetailScreen(
                     emvCardData = data,
-                    amount = amount,
-                    innerPadding = innerPadding,
                     onBack = {
                         navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
                     }
