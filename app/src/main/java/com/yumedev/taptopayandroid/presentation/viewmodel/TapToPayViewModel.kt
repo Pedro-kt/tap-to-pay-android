@@ -37,14 +37,6 @@ class TapToPayViewModel(
         }
     }
 
-    fun startWaitingForCard() {
-        _nfcState.value = NfcState.Waiting
-    }
-
-    fun setAmount(amount: String) {
-        _lastAmount.value = amount
-    }
-
     private fun processNfcTag(tag: Tag) {
         viewModelScope.launch {
             // Read card immediately and transition directly to Success or Error
@@ -60,10 +52,6 @@ class TapToPayViewModel(
                 }
             )
         }
-    }
-
-    fun resetState() {
-        _nfcState.value = NfcState.Waiting
     }
 
     fun clearStateOnly() {
