@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yumedev.taptopayandroid.R
+import com.yumedev.taptopayandroid.data.datasource.audio.SoundManager
 import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.NfcState
 import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
@@ -62,6 +64,7 @@ fun TapToPayScreen(
     viewModel: TapToPayViewModel = viewModel()
 ) {
     val nfcState by viewModel.nfcState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.startNewTransaction(amount)
@@ -71,9 +74,13 @@ fun TapToPayScreen(
     LaunchedEffect(nfcState) {
         when (nfcState) {
             is NfcState.Success -> {
+                // Play success sound
+                SoundManager.playSuccess(context)
                 onSuccess((nfcState as NfcState.Success).emvCardData)
             }
             is NfcState.Error -> {
+                // Play failed sound
+                SoundManager.playFailed(context)
                 onError((nfcState as NfcState.Error).message)
             }
             else -> {}
