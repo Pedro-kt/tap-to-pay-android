@@ -67,7 +67,7 @@
     <string name="theme_system">System</string>
     <string name="sound_vibration_section">SOUND &amp; VIBRATION</string>
     <string name="sound_on_detect_title">Sound on card detect</string>
-    <string name="sound_on_detect_subtitle">Play a sound when tapping</string>
+    <string name="sound_on_detect_subtitle">Play sound on success or failure</string>
     <string name="vibration_on_detect_title">Vibration on detect</string>
     <string name="vibration_on_detect_subtitle">Haptic pulse when reading card</string>
     <string name="developer_mode_section">DEVELOPER MODE</string>

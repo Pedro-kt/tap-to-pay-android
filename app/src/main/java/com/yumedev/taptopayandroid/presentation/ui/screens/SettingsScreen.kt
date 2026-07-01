@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yumedev.taptopayandroid.R
+import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 import java.util.Calendar
 
 enum class ThemeOption {
@@ -66,9 +67,11 @@ fun SettingsScreen(
     val versionName = packageInfo.versionName
     val versionText = "$versionName"
 
+    val preferencesManager = remember { PreferencesManager.getInstance(context) }
+
     var selectedTheme by remember { mutableStateOf(ThemeOption.LIGHT) }
-    var soundEnabled by remember { mutableStateOf(true) }
-    var vibrationEnabled by remember { mutableStateOf(false) }
+    var soundEnabled by remember { mutableStateOf(preferencesManager.isSoundEnabled) }
+    var vibrationEnabled by remember { mutableStateOf(preferencesManager.isVibrationEnabled) }
     var rawLogsEnabled by remember { mutableStateOf(true) }
 
     LazyColumn(
@@ -115,7 +118,10 @@ fun SettingsScreen(
                     title = stringResource(R.string.sound_on_detect_title),
                     subtitle = stringResource(R.string.sound_on_detect_subtitle),
                     checked = soundEnabled,
-                    onCheckedChange = { soundEnabled = it }
+                    onCheckedChange = {
+                        soundEnabled = it
+                        preferencesManager.isSoundEnabled = it
+                    }
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(start = 56.dp),
@@ -126,7 +132,10 @@ fun SettingsScreen(
                     title = stringResource(R.string.vibration_on_detect_title),
                     subtitle = stringResource(R.string.vibration_on_detect_subtitle),
                     checked = vibrationEnabled,
-                    onCheckedChange = { vibrationEnabled = it }
+                    onCheckedChange = {
+                        vibrationEnabled = it
+                        preferencesManager.isVibrationEnabled = it
+                    }
                 )
             }
         }

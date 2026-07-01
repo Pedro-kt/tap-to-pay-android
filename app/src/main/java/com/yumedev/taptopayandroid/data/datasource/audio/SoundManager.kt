@@ -4,17 +4,24 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.util.Log
 import com.yumedev.taptopayandroid.R
+import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 
 object SoundManager {
 
     private var mediaPlayer: MediaPlayer? = null
 
     fun playSuccess(context: Context) {
-        playSound(context, R.raw.success, "success")
+        val preferencesManager = PreferencesManager.getInstance(context)
+        if (preferencesManager.isSoundEnabled) {
+            playSound(context, R.raw.success, "success")
+        }
     }
 
     fun playFailed(context: Context) {
-        playSound(context, R.raw.failed, "failed")
+        val preferencesManager = PreferencesManager.getInstance(context)
+        if (preferencesManager.isSoundEnabled) {
+            playSound(context, R.raw.failed, "failed")
+        }
     }
 
     private fun playSound(context: Context, resourceId: Int, soundName: String) {
