@@ -1,31 +1,46 @@
 package com.yumedev.taptopayandroid.presentation.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.yumedev.taptopayandroid.R
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.yumedev.taptopayandroid.domain.model.CardInfo
-import com.yumedev.taptopayandroid.domain.model.CardType
-import com.yumedev.taptopayandroid.presentation.ui.screens.ErrorScreen
-import com.yumedev.taptopayandroid.presentation.ui.screens.HistoryScreen
-import com.yumedev.taptopayandroid.presentation.ui.screens.HomeScreen
-import com.yumedev.taptopayandroid.presentation.ui.screens.SettingsScreen
-import com.yumedev.taptopayandroid.presentation.ui.screens.SuccessScreen
-import com.yumedev.taptopayandroid.presentation.ui.screens.TapToPayScreen
+import com.yumedev.taptopayandroid.domain.model.*
+import com.yumedev.taptopayandroid.presentation.ui.screens.*
+import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
     innerPadding: PaddingValues
 ) {
+    // Shared ViewModel across navigation
+    val sharedViewModel: TapToPayViewModel = viewModel()
+
     NavHost(
         navController = navController,
         startDestination = NavigationRoutes.Home.route
     ) {
         composable(route = NavigationRoutes.Home.route) {
+
+            LaunchedEffect(Unit) {
+                sharedViewModel.clearStateOnly()
+            }
+
             HomeScreen(
                 onGeneratePayment = { amount ->
                     navController.navigate(NavigationRoutes.TapToPay.createRoute(amount))
@@ -46,12 +61,12 @@ fun NavGraph(
                 onCancel = {
                     navController.popBackStack()
                 },
-                onSuccess = { cardInfo ->
+                onSuccess = { emvCardData ->
                     navController.navigate(
                         NavigationRoutes.Success.createRoute(
                             amount = amount,
-                            cardNumber = cardInfo.cardNumber,
-                            cardType = cardInfo.cardType.name
+                            cardNumber = emvCardData.cardholderData.panLastFour,
+                            cardType = emvCardData.cardType.name
                         )
                     ) {
                         // Remove TapToPay from back stack
@@ -73,7 +88,8 @@ fun NavGraph(
                         }
                     }
                 },
-                innerPadding = innerPadding
+                innerPadding = innerPadding,
+                viewModel = sharedViewModel
             )
         }
 
@@ -94,30 +110,25 @@ fun NavGraph(
             )
         ) { backStackEntry ->
             val amount = backStackEntry.arguments?.getString("amount") ?: "$0.00"
-            val cardNumber = backStackEntry.arguments?.getString("cardNumber") ?: ""
-            val cardTypeString = backStackEntry.arguments?.getString("cardType") ?: "UNKNOWN"
-            val cardType = try {
-                CardType.valueOf(cardTypeString)
-            } catch (e: IllegalArgumentException) {
-                CardType.UNKNOWN
+            val emvCardData by sharedViewModel.lastEmvCardData.collectAsState()
+
+            emvCardData?.let { data ->
+                SuccessScreen(
+                    amount = amount,
+                    emvCardData = data,
+                    innerPadding = innerPadding,
+                    onNavigateToDetails = {
+                        navController.navigate(NavigationRoutes.CardDetail.route) {
+                            popUpTo(NavigationRoutes.Home.route) {
+                                inclusive = false
+                            }
+                        }
+                    },
+                    onBack = {
+                        navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
+                    }
+                )
             }
-
-            // Create a CardInfo object with the received data
-            val cardInfo = CardInfo(
-                cardNumber = cardNumber,
-                expirationDate = "", // Not needed for success screen
-                cardType = cardType
-            )
-
-            SuccessScreen(
-                amount = amount,
-                cardInfo = cardInfo,
-                innerPadding = innerPadding,
-                onNavigateToDetails = {
-                    // Navigate back to home for now
-                    navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
-                }
-            )
         }
 
         composable(
@@ -139,6 +150,29 @@ fun NavGraph(
                     navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
                 }
             )
+        }
+
+        composable(route = NavigationRoutes.CardDetail.route) {
+            val emvCardData by sharedViewModel.lastEmvCardData.collectAsState()
+
+            emvCardData?.let { data ->
+                CardDetailScreen(
+                    emvCardData = data,
+                    onBack = {
+                        navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
+                    }
+                )
+            } ?: run {
+                // Fallback if no data available
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(stringResource(R.string.no_card_data_available))
+                }
+            }
         }
     }
 }

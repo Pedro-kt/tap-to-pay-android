@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
                     currentRoute.startsWith("tap_to_pay") -> false
                     currentRoute.startsWith("success") -> false
                     currentRoute.startsWith("error") -> false
+                    currentRoute.startsWith("card_detail") -> false
                     else -> true
                 }
 

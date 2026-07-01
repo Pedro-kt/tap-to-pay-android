@@ -1,5 +1,6 @@
 package com.yumedev.taptopayandroid.presentation.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,6 +25,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.yumedev.taptopayandroid.R
-import com.yumedev.taptopayandroid.domain.model.CardInfo
+import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.CardType
 import com.yumedev.taptopayandroid.presentation.ui.theme.md_dark_success
 import com.yumedev.taptopayandroid.presentation.ui.theme.md_light_success
@@ -54,11 +59,14 @@ import kotlinx.coroutines.delay
 @Composable
 fun SuccessScreen(
     amount: String,
-    cardInfo: CardInfo,
+    emvCardData: EmvCardData,
     innerPadding: PaddingValues,
-    onNavigateToDetails: () -> Unit
+    onNavigateToDetails: () -> Unit,
+    onBack: () -> Unit = {}
 ) {
     val isDarkTheme = isSystemInDarkTheme()
+
+    BackHandler(onBack = onBack)
 
     // Auto-navigate after 3 seconds
     LaunchedEffect(Unit) {
@@ -145,10 +153,10 @@ fun SuccessScreen(
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            append(getCardTypeName(cardInfo.cardType))
+                            append(getCardTypeName(emvCardData.cardType))
                             append(" ")
                             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append("•••• ${cardInfo.cardNumber.takeLast(4)}")
+                                append("•••• ${emvCardData.cardholderData.panLastFour}")
                             }
                         },
                         style = MaterialTheme.typography.bodyLarge,
@@ -203,6 +211,7 @@ private fun getCardTypeName(cardType: CardType): String {
         CardType.MASTERCARD -> "Mastercard"
         CardType.AMEX -> "American Express"
         CardType.DISCOVER -> "Discover"
+        CardType.MAESTRO -> "Maestro"
         CardType.UNKNOWN -> "Card"
     }
 }

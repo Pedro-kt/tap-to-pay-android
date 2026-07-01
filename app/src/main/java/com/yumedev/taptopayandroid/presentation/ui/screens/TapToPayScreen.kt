@@ -48,7 +48,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yumedev.taptopayandroid.R
-import com.yumedev.taptopayandroid.domain.model.CardInfo
+import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.NfcState
 import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
 
@@ -56,7 +56,7 @@ import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
 fun TapToPayScreen(
     amount: String,
     onCancel: () -> Unit,
-    onSuccess: (CardInfo) -> Unit,
+    onSuccess: (EmvCardData) -> Unit,
     onError: (String) -> Unit,
     innerPadding: PaddingValues,
     viewModel: TapToPayViewModel = viewModel()
@@ -64,14 +64,14 @@ fun TapToPayScreen(
     val nfcState by viewModel.nfcState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.startWaitingForCard()
+        viewModel.startNewTransaction(amount)
     }
 
     // Navigate to success or error screen based on state
     LaunchedEffect(nfcState) {
         when (nfcState) {
             is NfcState.Success -> {
-                onSuccess((nfcState as NfcState.Success).cardInfo)
+                onSuccess((nfcState as NfcState.Success).emvCardData)
             }
             is NfcState.Error -> {
                 onError((nfcState as NfcState.Error).message)
