@@ -142,7 +142,8 @@ class NfcCardReader {
             Log.d(TAG, "GPO Response: ${gpoResponse.toHexString()}")
 
             if (isSuccessResponse(gpoResponse)) {
-                allRecords.add(gpoResponse)
+                // Remove status word bytes (last 2 bytes) before adding to records
+                allRecords.add(removeStatusWord(gpoResponse))
 
                 // Parse AFL (Application File Locator) from GPO response
                 val afl = findTag(gpoResponse, 0x94.toByte())
@@ -177,7 +178,8 @@ class NfcCardReader {
                                 Log.d(TAG, "Record SFI=$sfi Rec=$record: ${recordResponse.toHexString()}")
 
                                 if (isSuccessResponse(recordResponse)) {
-                                    allRecords.add(recordResponse)
+                                    // Remove status word bytes before adding
+                                    allRecords.add(removeStatusWord(recordResponse))
                                 }
                             } catch (e: Exception) {
                                 Log.d(TAG, "Failed to read SFI=$sfi Rec=$record: ${e.message}")
@@ -217,7 +219,8 @@ class NfcCardReader {
                                     statusDescription = getStatusDescription(recordResponse)
                                 ))
 
-                                allRecords.add(recordResponse)
+                                // Remove status word bytes before adding
+                                allRecords.add(removeStatusWord(recordResponse))
                                 Log.d(TAG, "Record SFI=$sfi Rec=$record (${recordResponse.size} bytes)")
                             } else {
                                 if (record == 1) {
@@ -240,11 +243,16 @@ class NfcCardReader {
             val transactionData = EmvTagParser.parseTransactionData(allRecords, amountCents)
             val cardholderData = EmvTagParser.parseCardholderData(allRecords)
 
+            // Extract all tags from all records
+            val allData = allRecords.flatMap { it.toList() }.toByteArray()
+            val additionalTags = EmvTagParser.extractAllTags(allData)
+
             val emvCardData = EmvCardData(
                 applicationInfo = applicationInfo,
                 transactionData = transactionData,
                 cardholderData = cardholderData,
-                apduCommands = apduCommands
+                apduCommands = apduCommands,
+                additionalTags = additionalTags
             )
 
             Log.d(TAG, "Card read successfully")
@@ -379,6 +387,15 @@ class NfcCardReader {
             i++
         }
         return null
+    }
+
+    private fun removeStatusWord(response: ByteArray): ByteArray {
+        // Remove last 2 bytes (status word 90 00)
+        return if (response.size >= 2) {
+            response.copyOfRange(0, response.size - 2)
+        } else {
+            response
+        }
     }
 
     private fun ByteArray.toHexString(): String {

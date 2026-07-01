@@ -28,4 +28,32 @@
     <string name="nfc_ready">NFC Ready</string>
     <string name="nfc_disabled">NFC Disabled</string>
     <string name="nfc_not_supported">NFC Not Supported</string>
+
+    <!-- Card Detail Screen -->
+    <string name="transaction_details">Transaction Details</string>
+    <string name="back">Back</string>
+    <string name="tab_tags_aid">Tags &amp; AID</string>
+    <string name="tab_apdu_commands">APDU Commands</string>
+    <string name="search_tag_aid_value">Search tag, AID or value…</string>
+    <string name="search_command_status">Search command or status word…</string>
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
+    <string name="success">Success</string>
+    <string name="card_label">Card</string>
+    <string name="finish_in">Finish in: %1$s</string>
+    <string name="copy">Copy</string>
+    <string name="bytes_suffix">B</string>
+
+    <!-- EMV Categories -->
+    <string name="category_application_info">APPLICATION INFORMATION</string>
+    <string name="category_transaction_data">TRANSACTION DATA</string>
+    <string name="category_cardholder_data">CARDHOLDER DATA</string>
+    <string name="category_other_tags">OTHER TAGS</string>
+
+    <!-- APDU Section Labels -->
+    <string name="apdu_command_label">C-APDU</string>
+    <string name="apdu_response_label">R-APDU</string>
+
+    <!-- No Data -->
+    <string name="no_card_data_available">No card data available</string>
 </resources>

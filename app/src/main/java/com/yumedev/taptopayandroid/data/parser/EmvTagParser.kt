@@ -153,15 +153,92 @@ object EmvTagParser {
                 lengthByte
             }
 
+            if (i + length > data.size) break
+
             if (currentTag.contentEquals(tagBytes)) {
-                if (i + length > data.size) return null
                 return data.sliceArray(i until i + length)
+            }
+
+            // Check if this is a constructed tag (template) and search recursively
+            val tagByte = currentTag[0].toInt() and 0xFF
+            val isConstructed = (tagByte and 0x20) != 0 ||
+                               tagByte == 0x70 || tagByte == 0x77 || tagByte == 0x6F ||
+                               tagByte == 0xA5 || tagByte == 0xBF
+
+            if (isConstructed) {
+                val nestedValue = data.sliceArray(i until i + length)
+                val found = findTag(nestedValue, targetTag)
+                if (found != null) return found
             }
 
             i += length
         }
 
         return null
+    }
+
+    // Extract all EMV tags from raw data
+    fun extractAllTags(data: ByteArray): Map<String, EmvTag> {
+        val tags = mutableMapOf<String, EmvTag>()
+        extractTagsRecursive(data, tags)
+        return tags
+    }
+
+    private fun extractTagsRecursive(data: ByteArray, tags: MutableMap<String, EmvTag>) {
+        var i = 0
+
+        while (i < data.size) {
+            // Determine tag size
+            val tagSize = if (i < data.size && (data[i].toInt() and 0x1F) == 0x1F) 2 else 1
+            if (i + tagSize > data.size) break
+
+            val tagBytes = data.sliceArray(i until i + tagSize)
+            val tagHex = tagBytes.toHexString()
+            i += tagSize
+
+            // Read length
+            if (i >= data.size) break
+            val lengthByte = data[i].toInt() and 0xFF
+            i++
+
+            val length = if (lengthByte and 0x80 != 0) {
+                val numLengthBytes = lengthByte and 0x7F
+                if (i + numLengthBytes > data.size) break
+
+                var actualLength = 0
+                for (j in 0 until numLengthBytes) {
+                    actualLength = (actualLength shl 8) or (data[i++].toInt() and 0xFF)
+                }
+                actualLength
+            } else {
+                lengthByte
+            }
+
+            if (i + length > data.size) break
+
+            // Get value
+            val value = data.sliceArray(i until i + length)
+
+            // Skip status word tags (90 00) and template tags
+            if (tagHex != "90" && tagHex != "6F" && tagHex != "70" && tagHex != "77" && tagHex != "A5" && tagHex != "BF0C") {
+                // Only add if not already present (first occurrence wins)
+                if (!tags.containsKey(tagHex)) {
+                    tags[tagHex] = parseTag(tagHex, value)
+                }
+            }
+
+            // Check if this is a constructed tag and recursively extract nested tags
+            val tagByte = tagBytes[0].toInt() and 0xFF
+            val isConstructed = (tagByte and 0x20) != 0 ||
+                               tagByte == 0x70 || tagByte == 0x77 || tagByte == 0x6F ||
+                               tagByte == 0xA5 || tagByte == 0xBF
+
+            if (isConstructed) {
+                extractTagsRecursive(value, tags)
+            }
+
+            i += length
+        }
     }
 
     private fun decodeBcdPan(value: ByteArray): String {
@@ -178,9 +255,16 @@ object EmvTagParser {
     }
 
     private fun formatExpirationDate(value: ByteArray): String {
-        val year = String.format("%02d", value[0].toInt() and 0xFF)
-        val month = String.format("%02d", value[1].toInt() and 0xFF)
-        return "$month/$year"
+        // Decode BCD format: each byte has high nibble and low nibble representing decimal digits
+        val year = decodeBcdByte(value[0])
+        val month = decodeBcdByte(value[1])
+        return "%02d/%02d".format(month, year)
+    }
+
+    private fun decodeBcdByte(byte: Byte): Int {
+        val high = (byte.toInt() shr 4) and 0x0F
+        val low = byte.toInt() and 0x0F
+        return high * 10 + low
     }
 
     private fun decodeAmount(value: ByteArray): String {
@@ -300,25 +384,54 @@ object EmvTagParser {
         "5A" to TagDefinition("5A", "Primary Account Number (PAN)", "Card number"),
         "5F20" to TagDefinition("5F20", "Cardholder Name", "Name on card"),
         "5F24" to TagDefinition("5F24", "Application Expiration Date", "Card expiration (YYMMDD)"),
+        "5F25" to TagDefinition("5F25", "Application Effective Date", "Date application becomes effective"),
+        "5F28" to TagDefinition("5F28", "Issuer Country Code", "Country code of card issuer"),
         "5F2A" to TagDefinition("5F2A", "Transaction Currency Code", "ISO 4217 currency code"),
+        "5F2D" to TagDefinition("5F2D", "Language Preference", "Cardholder language preference"),
         "5F34" to TagDefinition("5F34", "PAN Sequence Number", "Distinguishes cards with same PAN"),
         "82" to TagDefinition("82", "Application Interchange Profile", "Card capabilities"),
+        "84" to TagDefinition("84", "Dedicated File (DF) Name", "DF name of the application"),
         "87" to TagDefinition("87", "Application Priority Indicator", "Application selection priority"),
+        "8C" to TagDefinition("8C", "CDOL1", "Card Risk Management Data Object List 1"),
+        "8D" to TagDefinition("8D", "CDOL2", "Card Risk Management Data Object List 2"),
         "8E" to TagDefinition("8E", "CVM List", "Cardholder Verification Method list"),
+        "8F" to TagDefinition("8F", "Certification Authority Public Key Index", "CA public key index"),
+        "90" to TagDefinition("90", "Issuer Public Key Certificate", "Issuer's public key certificate"),
+        "92" to TagDefinition("92", "Issuer Public Key Remainder", "Remainder of issuer's public key"),
         "94" to TagDefinition("94", "Application File Locator", "Indicates data file locations"),
         "9A" to TagDefinition("9A", "Transaction Date", "Date of transaction (YYMMDD)"),
         "9C" to TagDefinition("9C", "Transaction Type", "Type of transaction"),
         "9F02" to TagDefinition("9F02", "Amount, Authorised", "Transaction amount"),
+        "9F03" to TagDefinition("9F03", "Amount, Other", "Other amount"),
+        "9F07" to TagDefinition("9F07", "Application Usage Control", "Application usage restrictions"),
+        "9F08" to TagDefinition("9F08", "Application Version Number", "Application version number"),
         "9F0B" to TagDefinition("9F0B", "Cardholder Name Extended", "Extended cardholder name"),
+        "9F0D" to TagDefinition("9F0D", "Issuer Action Code - Default", "IAC default"),
+        "9F0E" to TagDefinition("9F0E", "Issuer Action Code - Denial", "IAC denial"),
+        "9F0F" to TagDefinition("9F0F", "Issuer Action Code - Online", "IAC online"),
         "9F10" to TagDefinition("9F10", "Issuer Application Data", "Data from card issuer"),
+        "9F1A" to TagDefinition("9F1A", "Terminal Country Code", "Country code of terminal"),
+        "9F21" to TagDefinition("9F21", "Transaction Time", "Time of transaction"),
         "9F26" to TagDefinition("9F26", "Application Cryptogram", "Transaction cryptogram"),
         "9F27" to TagDefinition("9F27", "Cryptogram Information Data", "Cryptogram type"),
+        "9F32" to TagDefinition("9F32", "Issuer Public Key Exponent", "Exponent of issuer's public key"),
         "9F33" to TagDefinition("9F33", "Terminal Capabilities", "Terminal feature support"),
         "9F34" to TagDefinition("9F34", "CVM Results", "Cardholder verification results"),
         "9F35" to TagDefinition("9F35", "Terminal Type", "Type of terminal"),
         "9F36" to TagDefinition("9F36", "Application Transaction Counter", "Number of transactions on card"),
         "9F37" to TagDefinition("9F37", "Unpredictable Number", "Random number for security"),
-        "9F38" to TagDefinition("9F38", "PDOL", "Processing options data requirements")
+        "9F38" to TagDefinition("9F38", "PDOL", "Processing options data requirements"),
+        "9F42" to TagDefinition("9F42", "Application Currency Code", "Currency code of application"),
+        "9F44" to TagDefinition("9F44", "Application Currency Exponent", "Currency exponent"),
+        "9F45" to TagDefinition("9F45", "Data Authentication Code", "Dynamic data authentication code"),
+        "9F46" to TagDefinition("9F46", "ICC Public Key Certificate", "Card's public key certificate"),
+        "9F47" to TagDefinition("9F47", "ICC Public Key Exponent", "Card's public key exponent"),
+        "9F48" to TagDefinition("9F48", "ICC Public Key Remainder", "Remainder of card's public key"),
+        "9F4A" to TagDefinition("9F4A", "Static Data Authentication Tag List", "SDA tag list"),
+        "9F4C" to TagDefinition("9F4C", "ICC Dynamic Number", "Dynamic number from card"),
+        "9F4D" to TagDefinition("9F4D", "Log Entry", "Transaction log entry"),
+        "9F6E" to TagDefinition("9F6E", "Form Factor Indicator", "Device form factor"),
+        "9F7C" to TagDefinition("9F7C", "Merchant Custom Data", "Custom data from merchant")
     )
 
     private val CURRENCY_CODES = mapOf(

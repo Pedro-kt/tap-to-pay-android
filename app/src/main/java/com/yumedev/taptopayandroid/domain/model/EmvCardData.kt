@@ -14,11 +14,38 @@ data class EmvCardData(
 
     // Get all tags grouped by category
     fun getTagsByCategory(): Map<String, List<EmvTag>> {
-        return mapOf(
+        val manualTags = mapOf(
             "Application Information" to getApplicationTags(),
             "Transaction Data" to getTransactionTags(),
             "Cardholder Data" to getCardholderTags()
         )
+
+        // Merge with additional tags, avoiding duplicates
+        val manualTagIds = manualTags.values.flatten().map { it.tag }.toSet()
+        val extraTags = additionalTags.values.filter { it.tag !in manualTagIds }
+
+        // Group extra tags by category
+        val extraByCategory = extraTags.groupBy { tag ->
+            when {
+                tag.tag.startsWith("4F") || tag.tag.startsWith("50") ||
+                tag.tag.startsWith("87") || tag.tag.startsWith("9F38") -> "Application Information"
+
+                tag.tag.startsWith("9F02") || tag.tag.startsWith("5F2A") ||
+                tag.tag.startsWith("9A") || tag.tag.startsWith("9C") ||
+                tag.tag.startsWith("9F36") || tag.tag.startsWith("9F37") -> "Transaction Data"
+
+                tag.tag.startsWith("5A") || tag.tag.startsWith("5F24") ||
+                tag.tag.startsWith("5F20") || tag.tag.startsWith("57") ||
+                tag.tag.startsWith("5F34") -> "Cardholder Data"
+
+                else -> "Other Tags"
+            }
+        }
+
+        // Merge categories
+        return manualTags.mapValues { (category, tags) ->
+            tags + (extraByCategory[category] ?: emptyList())
+        } + extraByCategory.filterKeys { it !in manualTags.keys }
     }
 
     // Get application-related tags
