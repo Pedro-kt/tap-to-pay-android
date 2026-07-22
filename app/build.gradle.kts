@@ -5,12 +5,6 @@ plugins {
     alias(libs.plugins.hilt.android)
 }
 
-// Solución temporal para conflicto de plugins
-configurations.all {
-    resolutionStrategy {
-        force("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
-    }
-}
 
 android {
     namespace = "com.yumedev.taptopayandroid"
@@ -59,6 +53,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
+    // Coroutines (required for NFC operations)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     // Unit Testing
     testImplementation(libs.junit)

@@ -11,15 +11,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yumedev.taptopayandroid.R
+import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 import com.yumedev.taptopayandroid.domain.model.ApduCommand
+import com.yumedev.taptopayandroid.domain.model.DetailLevel
 import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.presentation.ui.components.ApduCommandCard
 import com.yumedev.taptopayandroid.presentation.ui.components.CustomTabSelector
 import com.yumedev.taptopayandroid.presentation.ui.components.DetailSearchBar
+import com.yumedev.taptopayandroid.presentation.ui.components.SimplifiedCardView
 import com.yumedev.taptopayandroid.presentation.ui.components.TagCardContent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,6 +32,15 @@ fun CardDetailScreen(
     emvCardData: EmvCardData,
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
+    val preferencesManager = remember { PreferencesManager.getInstance(context) }
+
+    val detailLevel = when (preferencesManager.detailLevel) {
+        PreferencesManager.DETAIL_LEVEL_SIMPLE -> DetailLevel.SIMPLE
+        PreferencesManager.DETAIL_LEVEL_DETAILED -> DetailLevel.DETAILED
+        else -> DetailLevel.DETAILED
+    }
+
     var selectedTab by remember { mutableIntStateOf(0) }
     var searchQuery by remember { mutableStateOf("") }
 
@@ -45,35 +58,41 @@ fun CardDetailScreen(
             )
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            // Tabs
-            CustomTabSelector(
-                selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it },
+        if (detailLevel == DetailLevel.SIMPLE) {
+            SimplifiedCardView(
+                emvCardData = emvCardData,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                    .fillMaxSize()
+                    .padding(padding)
             )
-
-            // Search Bar
-            DetailSearchBar(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it },
-                placeholder = if (selectedTab == 0) stringResource(R.string.search_tag_aid_value) else stringResource(R.string.search_command_status),
+        } else {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp,end = 16.dp, top = 4.dp, bottom = 16.dp)
-            )
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                CustomTabSelector(
+                    selectedTab = selectedTab,
+                    onTabSelected = { selectedTab = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                )
 
-            // Content based on selected tab
-            Box(modifier = Modifier.weight(1f)) {
-                when (selectedTab) {
-                    0 -> TagsAndAidTab(emvCardData, searchQuery)
-                    1 -> ApduCommandsTab(emvCardData.apduCommands, searchQuery)
+                DetailSearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    placeholder = if (selectedTab == 0) stringResource(R.string.search_tag_aid_value) else stringResource(R.string.search_command_status),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp,end = 16.dp, top = 4.dp, bottom = 16.dp)
+                )
+
+                Box(modifier = Modifier.weight(1f)) {
+                    when (selectedTab) {
+                        0 -> TagsAndAidTab(emvCardData, searchQuery)
+                        1 -> ApduCommandsTab(emvCardData.apduCommands, searchQuery)
+                    }
                 }
             }
         }

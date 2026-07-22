@@ -14,7 +14,7 @@ object SecureLogger {
         "5F34",  // PAN Sequence Number
     )
 
-    inline fun d(tag: String, message: () -> String) {
+    fun d(tag: String, message: () -> String) {
         Log.d(tag, message())
     }
 
