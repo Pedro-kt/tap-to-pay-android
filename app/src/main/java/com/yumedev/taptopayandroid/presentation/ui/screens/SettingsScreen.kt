@@ -52,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
+import com.yumedev.taptopayandroid.domain.model.DetailLevel
+import com.yumedev.taptopayandroid.presentation.ui.components.DetailLevelSelector
 import java.util.Calendar
 import androidx.core.net.toUri
 
@@ -80,9 +82,16 @@ fun SettingsScreen(
         else -> ThemeOption.SYSTEM
     }
 
+    val initialDetailLevel = when (preferencesManager.detailLevel) {
+        PreferencesManager.DETAIL_LEVEL_SIMPLE -> DetailLevel.SIMPLE
+        PreferencesManager.DETAIL_LEVEL_DETAILED -> DetailLevel.DETAILED
+        else -> DetailLevel.DETAILED
+    }
+
     var selectedTheme by remember { mutableStateOf(initialTheme) }
     var soundEnabled by remember { mutableStateOf(preferencesManager.isSoundEnabled) }
     var rawLogsEnabled by remember { mutableStateOf(true) }
+    var selectedDetailLevel by remember { mutableStateOf(initialDetailLevel) }
 
     LazyColumn(
         modifier = Modifier
@@ -159,13 +168,26 @@ fun SettingsScreen(
                     modifier = Modifier.padding(start = 56.dp),
                     color = MaterialTheme.colorScheme.outlineVariant
                 )
-                SettingsItemNavigable(
+                SettingsItem(
                     icon = Icons.Outlined.Splitscreen,
                     title = stringResource(R.string.detail_level_title),
-                    subtitle = stringResource(R.string.detail_level_subtitle),
-                    endText = stringResource(R.string.detail_level_detailed),
-                    onClick = { }
-                )
+                    subtitle = stringResource(R.string.detail_level_subtitle)
+                ) {
+                    DetailLevelSelector(
+                        selectedLevel = selectedDetailLevel,
+                        onLevelSelected = { newLevel ->
+                            selectedDetailLevel = newLevel
+                            val detailLevelMode = when (newLevel) {
+                                DetailLevel.SIMPLE -> PreferencesManager.DETAIL_LEVEL_SIMPLE
+                                DetailLevel.DETAILED -> PreferencesManager.DETAIL_LEVEL_DETAILED
+                            }
+                            preferencesManager.detailLevel = detailLevelMode
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp)
+                    )
+                }
             }
         }
 

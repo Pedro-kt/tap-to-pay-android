@@ -72,8 +72,13 @@
     <string name="raw_nfc_logs_title">Raw NFC logs</string>
     <string name="raw_nfc_logs_subtitle">Capture every exchanged APDU</string>
     <string name="detail_level_title">Detail level</string>
-    <string name="detail_level_subtitle">Information included in each log</string>
+    <string name="detail_level_subtitle">Choose how card information is displayed</string>
+    <string name="detail_level_simple">Simple</string>
     <string name="detail_level_detailed">Detailed</string>
+    <string name="card_number_label">Card Number</string>
+    <string name="expiration_date_label">Expiration Date</string>
+    <string name="cardholder_name_label">Cardholder Name</string>
+    <string name="simplified_view_note">Enable detailed mode in Settings to view technical information</string>
     <string name="about_section">ABOUT</string>
     <string name="version_title">Version</string>
     <string name="developer_title">Developer</string>
