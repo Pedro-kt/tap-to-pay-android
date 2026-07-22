@@ -12,7 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yumedev.taptopayandroid.R
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -29,8 +29,7 @@ fun NavGraph(
     innerPadding: PaddingValues,
     onThemeChanged: (String) -> Unit = {}
 ) {
-    // Shared ViewModel across navigation
-    val sharedViewModel: TapToPayViewModel = viewModel()
+    val sharedViewModel: TapToPayViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
