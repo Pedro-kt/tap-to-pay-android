@@ -4,17 +4,19 @@ import android.nfc.Tag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yumedev.taptopayandroid.data.datasource.nfc.NfcManager
-import com.yumedev.taptopayandroid.data.repository.NfcRepositoryImpl
 import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.NfcState
 import com.yumedev.taptopayandroid.domain.repository.NfcRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TapToPayViewModel(
-    private val nfcRepository: NfcRepository = NfcRepositoryImpl()
+@HiltViewModel
+class TapToPayViewModel @Inject constructor(
+    private val nfcRepository: NfcRepository
 ) : ViewModel() {
 
     private val _nfcState = MutableStateFlow<NfcState>(NfcState.Waiting)

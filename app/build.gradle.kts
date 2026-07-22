@@ -1,6 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.hilt.android)
+}
+
+// Solución temporal para conflicto de plugins
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
+    }
 }
 
 android {
@@ -27,8 +36,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+            isIncludeAndroidResources = true
+        }
     }
     buildFeatures {
         compose = true
@@ -47,8 +62,9 @@ dependencies {
 
     // Unit Testing
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
     testImplementation(libs.truth)
     testImplementation(libs.androidx.arch.core.testing)
 
@@ -67,4 +83,18 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // Hilt Testing
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.compiler)
+
+    // Robolectric for unit tests with Android framework
+    testImplementation(libs.robolectric)
 }

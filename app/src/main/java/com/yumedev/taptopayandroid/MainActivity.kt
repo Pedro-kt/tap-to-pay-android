@@ -24,8 +24,10 @@ import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 import com.yumedev.taptopayandroid.presentation.navigation.NavGraph
 import com.yumedev.taptopayandroid.presentation.ui.components.MainBottomBar
 import com.yumedev.taptopayandroid.presentation.ui.theme.TapToPayAndroidTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     companion object {
