@@ -5,6 +5,7 @@ import android.nfc.tech.IsoDep
 import android.util.Log
 import com.yumedev.taptopayandroid.data.parser.EmvTagParser
 import com.yumedev.taptopayandroid.domain.model.*
+import com.yumedev.taptopayandroid.util.SecureLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -29,7 +30,7 @@ class NfcCardReader {
 
             isoDep.connect()
             isoDep.timeout = 5000 // 5 seconds timeout
-            Log.d(TAG, "Connected to card")
+            SecureLogger.d(TAG) { "Connected to card" }
 
             // Step 1: Select PPSE (Proximity Payment System Environment)
             val ppseCommand = byteArrayOf(
@@ -58,7 +59,7 @@ class NfcCardReader {
                 statusDescription = getStatusDescription(ppseResponse)
             ))
 
-            Log.d(TAG, "PPSE Response: ${ppseResponse.toHexString()}")
+            SecureLogger.dSecure(TAG, "PPSE Response: ${ppseResponse.toHexString()}")
 
             if (!isSuccessResponse(ppseResponse)) {
                 return@withContext Result.failure(Exception("Failed to select PPSE"))
@@ -66,7 +67,7 @@ class NfcCardReader {
 
             // Step 2: Extract AID from PPSE response
             val aidBytes = extractAID(ppseResponse) ?: return@withContext Result.failure(Exception("No AID found in PPSE response"))
-            Log.d(TAG, "Found AID: ${aidBytes.toHexString()}")
+            SecureLogger.d(TAG) { "Found AID: ${aidBytes.toHexString()}" }
 
             // Step 3: Select the payment application using AID
             val selectAidCommand = buildSelectCommand(aidBytes)
@@ -82,7 +83,7 @@ class NfcCardReader {
                 statusDescription = getStatusDescription(aidResponse)
             ))
 
-            Log.d(TAG, "AID Response: ${aidResponse.toHexString()}")
+            SecureLogger.dSecure(TAG, "AID Response: ${aidResponse.toHexString()}")
 
             if (!isSuccessResponse(aidResponse)) {
                 return@withContext Result.failure(Exception("Failed to select application"))
@@ -92,10 +93,10 @@ class NfcCardReader {
             // Parse PDOL from AID response to build proper GPO
             val pdol = findTag(aidResponse, 0x9F.toByte(), 0x38.toByte())
             val gpoCommand = if (pdol != null && pdol.isNotEmpty()) {
-                Log.d(TAG, "Found PDOL: ${pdol.toHexString()}")
+                SecureLogger.d(TAG) { "Found PDOL: ${pdol.toHexString()}" }
                 // Calculate total PDOL data length needed
                 val pdolLength = parsePdolLength(pdol)
-                Log.d(TAG, "PDOL requires $pdolLength bytes")
+                SecureLogger.d(TAG) { "PDOL requires $pdolLength bytes" }
 
                 // Build GPO with PDOL data (fill with zeros for simplicity)
                 val pdolData = ByteArray(pdolLength)
@@ -104,7 +105,7 @@ class NfcCardReader {
                 // Lc = 2 + pdolData.size (for tag 83 + length byte + data)
                 val lc = 2 + pdolData.size
 
-                Log.d(TAG, "Building GPO: Lc=$lc, PDOL Data Length=${pdolData.size}")
+                SecureLogger.d(TAG) { "Building GPO: Lc=$lc, PDOL Data Length=${pdolData.size}" }
 
                 byteArrayOf(
                     0x80.toByte(), // CLA
@@ -117,7 +118,7 @@ class NfcCardReader {
                     pdolData.size.toByte()  // PDOL length
                 ) + pdolData + byteArrayOf(0x00.toByte()) // Le
             } else {
-                Log.d(TAG, "No PDOL found, using default GPO")
+                SecureLogger.d(TAG) { "No PDOL found, using default GPO" }
                 // Default GPO
                 byteArrayOf(
                     0x80.toByte(), 0xA8.toByte(), 0x00.toByte(), 0x00.toByte(),
@@ -125,7 +126,7 @@ class NfcCardReader {
                 )
             }
 
-            Log.d(TAG, "GPO Command: ${gpoCommand.toHexString()}")
+            SecureLogger.d(TAG) { "GPO Command: ${gpoCommand.toHexString()}" }
 
             val gpoResponse = isoDep.transceive(gpoCommand)
 
@@ -139,7 +140,7 @@ class NfcCardReader {
                 statusDescription = getStatusDescription(gpoResponse)
             ))
 
-            Log.d(TAG, "GPO Response: ${gpoResponse.toHexString()}")
+            SecureLogger.dSecure(TAG, "GPO Response: ${gpoResponse.toHexString()}")
 
             if (isSuccessResponse(gpoResponse)) {
                 // Remove status word bytes (last 2 bytes) before adding to records
@@ -175,14 +176,14 @@ class NfcCardReader {
                                     statusDescription = getStatusDescription(recordResponse)
                                 ))
 
-                                Log.d(TAG, "Record SFI=$sfi Rec=$record: ${recordResponse.toHexString()}")
+                                SecureLogger.dSecure(TAG, "Record SFI=$sfi Rec=$record: ${recordResponse.toHexString()}")
 
                                 if (isSuccessResponse(recordResponse)) {
                                     // Remove status word bytes before adding
                                     allRecords.add(removeStatusWord(recordResponse))
                                 }
                             } catch (e: Exception) {
-                                Log.d(TAG, "Failed to read SFI=$sfi Rec=$record: ${e.message}")
+                                SecureLogger.d(TAG) { "Failed to read SFI=$sfi Rec=$record: ${e.message}" }
                             }
                         }
                         i += 4
@@ -194,7 +195,7 @@ class NfcCardReader {
 
             // Fallback: Manual record reading if needed
             if (allRecords.size <= 1) {
-                Log.d(TAG, "Attempting manual record read...")
+                SecureLogger.d(TAG) { "Attempting manual record read..." }
                 val sfiOrder = listOf(2, 1, 3, 4) // Try SFI 2 first
 
                 for (sfi in sfiOrder) {
@@ -221,16 +222,16 @@ class NfcCardReader {
 
                                 // Remove status word bytes before adding
                                 allRecords.add(removeStatusWord(recordResponse))
-                                Log.d(TAG, "Record SFI=$sfi Rec=$record (${recordResponse.size} bytes)")
+                                SecureLogger.logByteArraySize(TAG, "Record SFI=$sfi Rec=$record", recordResponse)
                             } else {
                                 if (record == 1) {
-                                    Log.d(TAG, "SFI=$sfi not available")
+                                    SecureLogger.d(TAG) { "SFI=$sfi not available" }
                                 }
                                 break // If record 1 fails, skip rest of this SFI
                             }
                         } catch (e: Exception) {
                             if (record == 1) {
-                                Log.d(TAG, "SFI=$sfi error: ${e.message}")
+                                SecureLogger.d(TAG) { "SFI=$sfi error: ${e.message}" }
                             }
                             break // If record 1 errors, skip rest of this SFI
                         }
@@ -255,7 +256,7 @@ class NfcCardReader {
                 additionalTags = additionalTags
             )
 
-            Log.d(TAG, "Card read successfully")
+            SecureLogger.d(TAG) { "Card read successfully" }
             Result.success(emvCardData)
 
         } catch (e: IOException) {
@@ -267,7 +268,7 @@ class NfcCardReader {
         } finally {
             try {
                 isoDep?.close()
-                Log.d(TAG, "Connection closed")
+                SecureLogger.d(TAG) { "Connection closed" }
             } catch (e: IOException) {
                 Log.e(TAG, "Error closing connection", e)
             }
@@ -323,7 +324,7 @@ class NfcCardReader {
             if (i < pdol.size) {
                 val length = pdol[i].toInt() and 0xFF
                 totalLength += length
-                Log.d(TAG, "PDOL tag requires $length bytes")
+                SecureLogger.d(TAG) { "PDOL tag requires $length bytes" }
                 i++
             }
         }
