@@ -1,6 +1,7 @@
 package com.yumedev.taptopayandroid.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.yumedev.taptopayandroid.domain.model.DetailLevel
 import com.yumedev.taptopayandroid.domain.usecase.GetDetailLevelUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,5 +15,5 @@ class CardDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _detailLevel = MutableStateFlow(getDetailLevelUseCase())
-    val detailLevel: StateFlow<String> = _detailLevel.asStateFlow()
+    val detailLevel: StateFlow<DetailLevel> = _detailLevel.asStateFlow()
 }

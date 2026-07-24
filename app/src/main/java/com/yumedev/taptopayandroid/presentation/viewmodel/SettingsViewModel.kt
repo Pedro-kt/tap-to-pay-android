@@ -1,6 +1,7 @@
 package com.yumedev.taptopayandroid.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.yumedev.taptopayandroid.domain.model.DetailLevel
 import com.yumedev.taptopayandroid.domain.usecase.GetDetailLevelUseCase
 import com.yumedev.taptopayandroid.domain.usecase.GetSoundEnabledUseCase
 import com.yumedev.taptopayandroid.domain.usecase.GetThemeModeUseCase
@@ -30,7 +31,7 @@ class SettingsViewModel @Inject constructor(
     val soundEnabled: StateFlow<Boolean> = _soundEnabled.asStateFlow()
 
     private val _detailLevel = MutableStateFlow(getDetailLevelUseCase())
-    val detailLevel: StateFlow<String> = _detailLevel.asStateFlow()
+    val detailLevel: StateFlow<DetailLevel> = _detailLevel.asStateFlow()
 
     fun updateThemeMode(mode: String) {
         updateThemeModeUseCase(mode)
@@ -42,7 +43,7 @@ class SettingsViewModel @Inject constructor(
         _soundEnabled.value = enabled
     }
 
-    fun updateDetailLevel(level: String) {
+    fun updateDetailLevel(level: DetailLevel) {
         updateDetailLevelUseCase(level)
         _detailLevel.value = level
     }

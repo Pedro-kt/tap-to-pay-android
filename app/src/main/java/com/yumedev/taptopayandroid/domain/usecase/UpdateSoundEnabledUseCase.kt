@@ -1,12 +1,12 @@
 package com.yumedev.taptopayandroid.domain.usecase
 
-import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
+import com.yumedev.taptopayandroid.domain.repository.PreferencesRepository
 import javax.inject.Inject
 
 class UpdateSoundEnabledUseCase @Inject constructor(
-    private val preferencesManager: PreferencesManager
+    private val preferencesRepository: PreferencesRepository
 ) {
     operator fun invoke(enabled: Boolean) {
-        preferencesManager.isSoundEnabled = enabled
+        preferencesRepository.setSoundEnabled(enabled)
     }
 }

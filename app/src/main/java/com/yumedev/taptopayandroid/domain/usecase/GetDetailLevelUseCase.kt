@@ -1,12 +1,13 @@
 package com.yumedev.taptopayandroid.domain.usecase
 
-import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
+import com.yumedev.taptopayandroid.domain.model.DetailLevel
+import com.yumedev.taptopayandroid.domain.repository.PreferencesRepository
 import javax.inject.Inject
 
 class GetDetailLevelUseCase @Inject constructor(
-    private val preferencesManager: PreferencesManager
+    private val preferencesRepository: PreferencesRepository
 ) {
-    operator fun invoke(): String {
-        return preferencesManager.detailLevel
+    operator fun invoke(): DetailLevel {
+        return preferencesRepository.getDetailLevel()
     }
 }

@@ -35,13 +35,7 @@ fun CardDetailScreen(
     onBack: () -> Unit,
     viewModel: CardDetailViewModel = hiltViewModel()
 ) {
-    val detailLevelString by viewModel.detailLevel.collectAsState()
-
-    val detailLevel = when (detailLevelString) {
-        PreferencesManager.DETAIL_LEVEL_SIMPLE -> DetailLevel.SIMPLE
-        PreferencesManager.DETAIL_LEVEL_DETAILED -> DetailLevel.DETAILED
-        else -> DetailLevel.DETAILED
-    }
+    val detailLevel by viewModel.detailLevel.collectAsState()
 
     var selectedTab by remember { mutableIntStateOf(0) }
     var searchQuery by remember { mutableStateOf("") }

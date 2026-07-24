@@ -1,12 +1,12 @@
 package com.yumedev.taptopayandroid.domain.usecase
 
-import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
+import com.yumedev.taptopayandroid.domain.repository.PreferencesRepository
 import javax.inject.Inject
 
 class UpdateThemeModeUseCase @Inject constructor(
-    private val preferencesManager: PreferencesManager
+    private val preferencesRepository: PreferencesRepository
 ) {
     operator fun invoke(themeMode: String) {
-        preferencesManager.themeMode = themeMode
+        preferencesRepository.setThemeMode(themeMode)
     }
 }

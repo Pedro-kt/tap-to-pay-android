@@ -88,11 +88,7 @@ fun SettingsScreen(
         else -> ThemeOption.SYSTEM
     }
 
-    val selectedDetailLevel = when (detailLevel) {
-        PreferencesManager.DETAIL_LEVEL_SIMPLE -> DetailLevel.SIMPLE
-        PreferencesManager.DETAIL_LEVEL_DETAILED -> DetailLevel.DETAILED
-        else -> DetailLevel.DETAILED
-    }
+    val selectedDetailLevel = detailLevel
 
     var rawLogsEnabled by remember { mutableStateOf(true) }
 
@@ -178,11 +174,7 @@ fun SettingsScreen(
                     DetailLevelSelector(
                         selectedLevel = selectedDetailLevel,
                         onLevelSelected = { newLevel ->
-                            val detailLevelMode = when (newLevel) {
-                                DetailLevel.SIMPLE -> PreferencesManager.DETAIL_LEVEL_SIMPLE
-                                DetailLevel.DETAILED -> PreferencesManager.DETAIL_LEVEL_DETAILED
-                            }
-                            viewModel.updateDetailLevel(detailLevelMode)
+                            viewModel.updateDetailLevel(newLevel)
                         },
                         modifier = Modifier
                             .fillMaxWidth()

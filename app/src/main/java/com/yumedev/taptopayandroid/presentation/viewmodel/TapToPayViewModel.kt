@@ -3,9 +3,9 @@ package com.yumedev.taptopayandroid.presentation.viewmodel
 import android.nfc.Tag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yumedev.taptopayandroid.data.datasource.nfc.NfcManager
 import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.NfcState
+import com.yumedev.taptopayandroid.domain.repository.NfcEventRepository
 import com.yumedev.taptopayandroid.domain.usecase.PlayFailedSoundUseCase
 import com.yumedev.taptopayandroid.domain.usecase.PlaySuccessSoundUseCase
 import com.yumedev.taptopayandroid.domain.usecase.ReadCardUseCase
@@ -21,7 +21,7 @@ class TapToPayViewModel @Inject constructor(
     private val readCardUseCase: ReadCardUseCase,
     private val playSuccessSoundUseCase: PlaySuccessSoundUseCase,
     private val playFailedSoundUseCase: PlayFailedSoundUseCase,
-    private val nfcManager: NfcManager
+    private val nfcEventRepository: NfcEventRepository
 ) : ViewModel() {
 
     private val _nfcState = MutableStateFlow<NfcState>(NfcState.Waiting)
@@ -36,9 +36,8 @@ class TapToPayViewModel @Inject constructor(
     val lastAmount: StateFlow<String> = _lastAmount.asStateFlow()
 
     init {
-        // Listen to NFC tags from MainActivity
         viewModelScope.launch {
-            nfcManager.nfcTagFlow.collect { tag ->
+            nfcEventRepository.nfcTagFlow.collect { tag ->
                 processNfcTag(tag)
             }
         }
