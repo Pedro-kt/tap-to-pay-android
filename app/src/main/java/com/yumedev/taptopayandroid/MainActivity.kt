@@ -26,6 +26,7 @@ import com.yumedev.taptopayandroid.presentation.ui.components.MainBottomBar
 import com.yumedev.taptopayandroid.presentation.ui.theme.TapToPayAndroidTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,13 +35,18 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
     }
 
+    @Inject
+    lateinit var preferencesManager: PreferencesManager
+
+    @Inject
+    lateinit var nfcManager: NfcManager
+
     private var lastProcessedTagId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val preferencesManager = remember { PreferencesManager.getInstance(this) }
             val systemInDarkTheme = isSystemInDarkTheme()
             var themeMode by remember { mutableStateOf(preferencesManager.themeMode) }
 
@@ -84,7 +90,8 @@ class MainActivity : ComponentActivity() {
                     NavGraph(
                         navController = navController,
                         innerPadding = innerPadding,
-                        onThemeChanged = onThemeChanged
+                        onThemeChanged = onThemeChanged,
+                        preferencesManager = preferencesManager
                     )
                 }
             }
@@ -124,7 +131,7 @@ class MainActivity : ComponentActivity() {
                 Log.d(TAG, "NFC Tag detected: $tagId")
 
                 lifecycleScope.launch {
-                    NfcManager.emitTag(tag)
+                    nfcManager.emitTag(tag)
                 }
 
                 // Clear the processed tag after a delay to allow re-reading

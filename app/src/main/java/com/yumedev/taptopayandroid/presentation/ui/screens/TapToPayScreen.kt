@@ -49,7 +49,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yumedev.taptopayandroid.R
-import com.yumedev.taptopayandroid.data.datasource.audio.SoundManager
 import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.NfcState
 import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
@@ -64,23 +63,17 @@ fun TapToPayScreen(
     viewModel: TapToPayViewModel = viewModel()
 ) {
     val nfcState by viewModel.nfcState.collectAsState()
-    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.startNewTransaction(amount)
     }
 
-    // Navigate to success or error screen based on state
     LaunchedEffect(nfcState) {
         when (nfcState) {
             is NfcState.Success -> {
-                // Play success sound
-                SoundManager.playSuccess(context)
                 onSuccess((nfcState as NfcState.Success).emvCardData)
             }
             is NfcState.Error -> {
-                // Play failed sound
-                SoundManager.playFailed(context)
                 onError((nfcState as NfcState.Error).message)
             }
             else -> {}

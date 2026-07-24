@@ -30,11 +30,9 @@ import com.yumedev.taptopayandroid.presentation.ui.components.TagCardContent
 @Composable
 fun CardDetailScreen(
     emvCardData: EmvCardData,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    preferencesManager: PreferencesManager
 ) {
-    val context = LocalContext.current
-    val preferencesManager = remember { PreferencesManager.getInstance(context) }
-
     val detailLevel = when (preferencesManager.detailLevel) {
         PreferencesManager.DETAIL_LEVEL_SIMPLE -> DetailLevel.SIMPLE
         PreferencesManager.DETAIL_LEVEL_DETAILED -> DetailLevel.DETAILED

@@ -4,8 +4,11 @@ import android.nfc.Tag
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object NfcManager {
+@Singleton
+class NfcManager @Inject constructor() {
     private val _nfcTagFlow = MutableSharedFlow<Tag>(replay = 0)
     val nfcTagFlow: SharedFlow<Tag> = _nfcTagFlow.asSharedFlow()
 

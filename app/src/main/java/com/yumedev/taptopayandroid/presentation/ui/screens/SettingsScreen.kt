@@ -64,7 +64,8 @@ enum class ThemeOption {
 @Composable
 fun SettingsScreen(
     innerPadding: PaddingValues = PaddingValues(),
-    onThemeChanged: (String) -> Unit = {}
+    onThemeChanged: (String) -> Unit = {},
+    preferencesManager: PreferencesManager
 ) {
     val context = LocalContext.current
     val packageInfo = remember {
@@ -72,8 +73,6 @@ fun SettingsScreen(
     }
     val versionName = packageInfo.versionName
     val versionText = "$versionName"
-
-    val preferencesManager = remember { PreferencesManager.getInstance(context) }
 
     val initialTheme = when (preferencesManager.themeMode) {
         PreferencesManager.THEME_LIGHT -> ThemeOption.LIGHT

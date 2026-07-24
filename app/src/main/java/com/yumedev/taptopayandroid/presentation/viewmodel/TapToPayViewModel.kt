@@ -3,6 +3,7 @@ package com.yumedev.taptopayandroid.presentation.viewmodel
 import android.nfc.Tag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yumedev.taptopayandroid.data.datasource.audio.SoundManager
 import com.yumedev.taptopayandroid.data.datasource.nfc.NfcManager
 import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.NfcState
@@ -16,7 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TapToPayViewModel @Inject constructor(
-    private val nfcRepository: NfcRepository
+    private val nfcRepository: NfcRepository,
+    private val soundManager: SoundManager,
+    private val nfcManager: NfcManager
 ) : ViewModel() {
 
     private val _nfcState = MutableStateFlow<NfcState>(NfcState.Waiting)
@@ -33,7 +36,7 @@ class TapToPayViewModel @Inject constructor(
     init {
         // Listen to NFC tags from MainActivity
         viewModelScope.launch {
-            NfcManager.nfcTagFlow.collect { tag ->
+            nfcManager.nfcTagFlow.collect { tag ->
                 processNfcTag(tag)
             }
         }
@@ -47,9 +50,11 @@ class TapToPayViewModel @Inject constructor(
             _nfcState.value = result.fold(
                 onSuccess = { emvCardData ->
                     _lastEmvCardData.value = emvCardData
+                    soundManager.playSuccess()
                     NfcState.Success(emvCardData)
                 },
                 onFailure = { exception ->
+                    soundManager.playFailed()
                     NfcState.Error(exception.message ?: "Unknown error reading card")
                 }
             )

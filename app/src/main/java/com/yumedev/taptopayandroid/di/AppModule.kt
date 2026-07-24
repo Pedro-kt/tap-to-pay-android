@@ -1,6 +1,7 @@
 package com.yumedev.taptopayandroid.di
 
 import com.yumedev.taptopayandroid.data.datasource.nfc.NfcCardReader
+import com.yumedev.taptopayandroid.data.parser.EmvTagParser
 import com.yumedev.taptopayandroid.data.repository.NfcRepositoryImpl
 import com.yumedev.taptopayandroid.domain.repository.NfcRepository
 import dagger.Module
@@ -15,8 +16,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideNfcCardReader(): NfcCardReader {
-        return NfcCardReader()
+    fun provideNfcCardReader(
+        emvTagParser: EmvTagParser
+    ): NfcCardReader {
+        return NfcCardReader(emvTagParser)
     }
 
     @Provides
