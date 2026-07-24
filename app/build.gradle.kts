@@ -73,6 +73,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.truth)
 
     // Debug
     debugImplementation(libs.androidx.compose.ui.tooling)
