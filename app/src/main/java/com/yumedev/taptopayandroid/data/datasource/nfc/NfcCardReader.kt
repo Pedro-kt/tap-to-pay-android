@@ -9,8 +9,13 @@ import com.yumedev.taptopayandroid.util.SecureLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class NfcCardReader {
+@Singleton
+class NfcCardReader @Inject constructor(
+    private val emvTagParser: EmvTagParser
+) {
 
     companion object {
         private const val TAG = "NfcCardReader"
@@ -240,13 +245,13 @@ class NfcCardReader {
             }
 
             // Parse all data using EmvTagParser
-            val applicationInfo = EmvTagParser.parseApplicationInfo(aidBytes, aidResponse)
-            val transactionData = EmvTagParser.parseTransactionData(allRecords, amountCents)
-            val cardholderData = EmvTagParser.parseCardholderData(allRecords)
+            val applicationInfo = emvTagParser.parseApplicationInfo(aidBytes, aidResponse)
+            val transactionData = emvTagParser.parseTransactionData(allRecords, amountCents)
+            val cardholderData = emvTagParser.parseCardholderData(allRecords)
 
             // Extract all tags from all records
             val allData = allRecords.flatMap { it.toList() }.toByteArray()
-            val additionalTags = EmvTagParser.extractAllTags(allData)
+            val additionalTags = emvTagParser.extractAllTags(allData)
 
             val emvCardData = EmvCardData(
                 applicationInfo = applicationInfo,

@@ -2,9 +2,16 @@ package com.yumedev.taptopayandroid.data.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PreferencesManager(context: Context) {
+@Singleton
+class PreferencesManager @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
         PREFS_NAME,
@@ -12,6 +19,7 @@ class PreferencesManager(context: Context) {
     )
 
     companion object {
+        private const val TAG = "PreferencesManager"
         private const val PREFS_NAME = "tap_to_pay_preferences"
         private const val KEY_SOUND_ENABLED = "sound_enabled"
         private const val KEY_THEME_MODE = "theme_mode"
@@ -27,7 +35,9 @@ class PreferencesManager(context: Context) {
         @Volatile
         private var instance: PreferencesManager? = null
 
+        @Deprecated("Use Hilt injection instead", ReplaceWith("Inject PreferencesManager via constructor"))
         fun getInstance(context: Context): PreferencesManager {
+            Log.w(TAG, "Using deprecated getInstance(). Please migrate to Hilt injection.")
             return instance ?: synchronized(this) {
                 instance ?: PreferencesManager(context.applicationContext).also {
                     instance = it

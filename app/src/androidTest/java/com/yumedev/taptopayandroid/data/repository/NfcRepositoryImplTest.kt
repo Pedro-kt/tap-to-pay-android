@@ -14,10 +14,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
 
-/**
- * Instrumentation tests for NfcRepositoryImpl.
- * These tests run on an Android device/emulator to have access to Android framework classes.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class NfcRepositoryImplTest {

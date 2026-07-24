@@ -1,11 +1,13 @@
 package com.yumedev.taptopayandroid.data.datasource.nfc
 
+import com.yumedev.taptopayandroid.data.parser.EmvTagParser
 import org.junit.Test
 import com.google.common.truth.Truth.assertThat
 
 class NfcCardReaderTest {
 
-    private val reader = NfcCardReader()
+    private val emvTagParser = EmvTagParser()
+    private val reader = NfcCardReader(emvTagParser)
 
     @Test
     fun `isSuccessResponse returns true for valid 90 00 status`() {

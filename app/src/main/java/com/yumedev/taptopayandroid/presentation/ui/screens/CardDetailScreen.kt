@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 import com.yumedev.taptopayandroid.domain.model.ApduCommand
@@ -25,21 +26,16 @@ import com.yumedev.taptopayandroid.presentation.ui.components.CustomTabSelector
 import com.yumedev.taptopayandroid.presentation.ui.components.DetailSearchBar
 import com.yumedev.taptopayandroid.presentation.ui.components.SimplifiedCardView
 import com.yumedev.taptopayandroid.presentation.ui.components.TagCardContent
+import com.yumedev.taptopayandroid.presentation.viewmodel.CardDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardDetailScreen(
     emvCardData: EmvCardData,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    viewModel: CardDetailViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-    val preferencesManager = remember { PreferencesManager.getInstance(context) }
-
-    val detailLevel = when (preferencesManager.detailLevel) {
-        PreferencesManager.DETAIL_LEVEL_SIMPLE -> DetailLevel.SIMPLE
-        PreferencesManager.DETAIL_LEVEL_DETAILED -> DetailLevel.DETAILED
-        else -> DetailLevel.DETAILED
-    }
+    val detailLevel by viewModel.detailLevel.collectAsState()
 
     var selectedTab by remember { mutableIntStateOf(0) }
     var searchQuery by remember { mutableStateOf("") }

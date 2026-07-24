@@ -5,26 +5,31 @@ import android.media.MediaPlayer
 import android.util.Log
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object SoundManager {
+@Singleton
+class SoundManager @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val preferencesManager: PreferencesManager
+) {
 
     private var mediaPlayer: MediaPlayer? = null
 
-    fun playSuccess(context: Context) {
-        val preferencesManager = PreferencesManager.getInstance(context)
+    fun playSuccess() {
         if (preferencesManager.isSoundEnabled) {
-            playSound(context, R.raw.success, "success")
+            playSound(R.raw.success, "success")
         }
     }
 
-    fun playFailed(context: Context) {
-        val preferencesManager = PreferencesManager.getInstance(context)
+    fun playFailed() {
         if (preferencesManager.isSoundEnabled) {
-            playSound(context, R.raw.failed, "failed")
+            playSound(R.raw.failed, "failed")
         }
     }
 
-    private fun playSound(context: Context, resourceId: Int, soundName: String) {
+    private fun playSound(resourceId: Int, soundName: String) {
         try {
             // Release previous instance if exists
             mediaPlayer?.release()

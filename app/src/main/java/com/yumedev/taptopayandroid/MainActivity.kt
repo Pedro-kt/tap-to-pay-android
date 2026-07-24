@@ -19,13 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.yumedev.taptopayandroid.data.datasource.nfc.NfcManager
-import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
+import com.yumedev.taptopayandroid.domain.repository.PreferencesRepository
+import com.yumedev.taptopayandroid.domain.usecase.HandleNfcTagUseCase
 import com.yumedev.taptopayandroid.presentation.navigation.NavGraph
 import com.yumedev.taptopayandroid.presentation.ui.components.MainBottomBar
 import com.yumedev.taptopayandroid.presentation.ui.theme.TapToPayAndroidTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,26 +35,29 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
     }
 
-    private var lastProcessedTagId: String? = null
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
+
+    @Inject
+    lateinit var handleNfcTagUseCase: HandleNfcTagUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val preferencesManager = remember { PreferencesManager.getInstance(this) }
             val systemInDarkTheme = isSystemInDarkTheme()
-            var themeMode by remember { mutableStateOf(preferencesManager.themeMode) }
+            var themeMode by remember { mutableStateOf(preferencesRepository.getThemeMode()) }
 
             val darkTheme = when (themeMode) {
-                PreferencesManager.THEME_LIGHT -> false
-                PreferencesManager.THEME_DARK -> true
-                PreferencesManager.THEME_SYSTEM -> systemInDarkTheme
+                PreferencesRepository.THEME_LIGHT -> false
+                PreferencesRepository.THEME_DARK -> true
+                PreferencesRepository.THEME_SYSTEM -> systemInDarkTheme
                 else -> systemInDarkTheme
             }
 
             val onThemeChanged: (String) -> Unit = { newTheme ->
                 themeMode = newTheme
-                preferencesManager.themeMode = newTheme
+                preferencesRepository.setThemeMode(newTheme)
             }
 
             TapToPayAndroidTheme(darkTheme = darkTheme) {
@@ -112,25 +116,10 @@ class MainActivity : ComponentActivity() {
 
             val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
             if (tag != null) {
-                val tagId = tag.id.contentToString()
-
-                // Prevent processing the same tag multiple times
-                if (tagId == lastProcessedTagId) {
-                    Log.d(TAG, "Tag already processed, skipping")
-                    return
-                }
-
-                lastProcessedTagId = tagId
-                Log.d(TAG, "NFC Tag detected: $tagId")
+                Log.d(TAG, "NFC Tag detected: ${tag.id.contentToString()}")
 
                 lifecycleScope.launch {
-                    NfcManager.emitTag(tag)
-                }
-
-                // Clear the processed tag after a delay to allow re-reading
-                lifecycleScope.launch {
-                    kotlinx.coroutines.delay(2000)
-                    lastProcessedTagId = null
+                    handleNfcTagUseCase(tag)
                 }
             } else {
                 Log.w(TAG, "NFC Tag is null")

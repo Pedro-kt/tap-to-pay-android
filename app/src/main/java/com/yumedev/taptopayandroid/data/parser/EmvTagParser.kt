@@ -1,8 +1,11 @@
 package com.yumedev.taptopayandroid.data.parser
 
 import com.yumedev.taptopayandroid.domain.model.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object EmvTagParser {
+@Singleton
+class EmvTagParser @Inject constructor() {
 
     fun parseTag(tag: String, value: ByteArray): EmvTag {
         val tagInfo = EMV_TAG_DEFINITIONS[tag] ?: TagDefinition(tag, "Unknown Tag", "")
@@ -371,13 +374,14 @@ object EmvTagParser {
         }
     }
 
-    private data class TagDefinition(
-        val tag: String,
-        val name: String,
-        val description: String
-    )
+    companion object {
+        private data class TagDefinition(
+            val tag: String,
+            val name: String,
+            val description: String
+        )
 
-    private val EMV_TAG_DEFINITIONS = mapOf(
+        private val EMV_TAG_DEFINITIONS = mapOf(
         "4F" to TagDefinition("4F", "Application Identifier (AID)", "Identifies the payment application"),
         "50" to TagDefinition("50", "Application Label", "Human-readable application name"),
         "57" to TagDefinition("57", "Track 2 Equivalent Data", "Magnetic stripe data"),
@@ -432,21 +436,22 @@ object EmvTagParser {
         "9F4D" to TagDefinition("9F4D", "Log Entry", "Transaction log entry"),
         "9F6E" to TagDefinition("9F6E", "Form Factor Indicator", "Device form factor"),
         "9F7C" to TagDefinition("9F7C", "Merchant Custom Data", "Custom data from merchant")
-    )
+        )
 
-    private val CURRENCY_CODES = mapOf(
+        private val CURRENCY_CODES = mapOf(
         840 to "USD (ISO 4217)",
         978 to "EUR (ISO 4217)",
         826 to "GBP (ISO 4217)",
         484 to "MXN (ISO 4217)",
         124 to "CAD (ISO 4217)",
         392 to "JPY (ISO 4217)"
-    )
+        )
 
-    private val TRANSACTION_TYPES = mapOf(
-        0x00 to "Purchase of goods/services",
-        0x01 to "Cash withdrawal",
-        0x09 to "Purchase with cashback",
-        0x20 to "Refund/Return"
-    )
+        private val TRANSACTION_TYPES = mapOf(
+            0x00 to "Purchase of goods/services",
+            0x01 to "Cash withdrawal",
+            0x09 to "Purchase with cashback",
+            0x20 to "Refund/Return"
+        )
+    }
 }

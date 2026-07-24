@@ -6,7 +6,7 @@ import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.repository.NfcRepository
 
 class NfcRepositoryImpl(
-    private val nfcCardReader: NfcCardReader = NfcCardReader()
+    private val nfcCardReader: NfcCardReader
 ) : NfcRepository {
 
     override suspend fun readCard(tag: Tag, amountCents: Long?): Result<EmvCardData> {
