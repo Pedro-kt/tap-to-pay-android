@@ -7,6 +7,8 @@ import org.junit.Test
 //Unit tests for EmvTagParser
 class EmvTagParserTest {
 
+    private val parser = EmvTagParser()
+
     // Malformed TLV Data Tests
 
     @Test
@@ -18,7 +20,7 @@ class EmvTagParserTest {
         )
 
         // When
-        val result = EmvTagParser.findTag(malformedData, "5A")
+        val result = parser.findTag(malformedData, "5A")
 
         // Then - Should NOT crash or read beyond buffer
         // Should return null or handle gracefully
@@ -33,7 +35,7 @@ class EmvTagParserTest {
         )
 
         // When
-        val result = EmvTagParser.findTag(truncatedData, "9F02")
+        val result = parser.findTag(truncatedData, "9F02")
 
         // Then - Should not crash
         assertThat(result).isNull()
@@ -45,7 +47,7 @@ class EmvTagParserTest {
         val emptyData = byteArrayOf()
 
         // When
-        val result = EmvTagParser.findTag(emptyData, "5A")
+        val result = parser.findTag(emptyData, "5A")
 
         // Then
         assertThat(result).isNull()
@@ -62,7 +64,7 @@ class EmvTagParserTest {
         )
 
         // When - Should complete without stack overflow
-        val tags = EmvTagParser.extractAllTags(nestedData)
+        val tags = parser.extractAllTags(nestedData)
 
         // Then - Should parse without hanging or crashing
         assertThat(tags).isNotNull()
@@ -76,7 +78,7 @@ class EmvTagParserTest {
         val emptyPan = byteArrayOf()
 
         // When
-        val tag = EmvTagParser.parseTag("5A", emptyPan)
+        val tag = parser.parseTag("5A", emptyPan)
 
         // Then - Should not crash, return empty or safe default
         assertThat(tag.valueDecoded).isNotNull()
@@ -91,7 +93,7 @@ class EmvTagParserTest {
         )
 
         // When
-        val tag = EmvTagParser.parseTag("5A", paddedPan)
+        val tag = parser.parseTag("5A", paddedPan)
 
         // Then - Should filter out all F's, only valid digits remain (41 + 11 + 11 = 411111)
         assertThat(tag.valueDecoded).isEqualTo("411111")
@@ -103,7 +105,7 @@ class EmvTagParserTest {
         val invalidMonth = byteArrayOf(0x26, 0x13, 0x31)
 
         // When
-        val tag = EmvTagParser.parseTag("5F24", invalidMonth)
+        val tag = parser.parseTag("5F24", invalidMonth)
 
         // Then - Should return formatted but shows corrupted data (13/26)
         // This is valid behavior - parser shows what's on card
@@ -120,7 +122,7 @@ class EmvTagParserTest {
         )
 
         // When
-        val tag = EmvTagParser.parseTag("9F02", maxAmount)
+        val tag = parser.parseTag("9F02", maxAmount)
 
         // Then - Should handle large numbers without overflow
         assertThat(tag.valueDecoded).isNotNull()
@@ -136,7 +138,7 @@ class EmvTagParserTest {
         val emptyResponse = byteArrayOf()
 
         // When
-        val appInfo = EmvTagParser.parseApplicationInfo(unknownAid, emptyResponse)
+        val appInfo = parser.parseApplicationInfo(unknownAid, emptyResponse)
 
         // Then - Should default to UNKNOWN, not crash
         assertThat(appInfo.cardType).isEqualTo(CardType.UNKNOWN)
@@ -150,7 +152,7 @@ class EmvTagParserTest {
         val response = byteArrayOf(0x50.toByte(), visaLabel.size.toByte()) + visaLabel
 
         // When
-        val appInfo = EmvTagParser.parseApplicationInfo(mastercardAid, response)
+        val appInfo = parser.parseApplicationInfo(mastercardAid, response)
 
         // Then - AID should take precedence (security critical)
         assertThat(appInfo.cardType).isEqualTo(CardType.MASTERCARD)
@@ -166,7 +168,7 @@ class EmvTagParserTest {
         )
 
         // When - Should not crash on corrupted data
-        val cardholderData = EmvTagParser.parseCardholderData(listOf(corruptedData))
+        val cardholderData = parser.parseCardholderData(listOf(corruptedData))
 
         // Then - Should return safe defaults
         assertThat(cardholderData.pan).isNotEmpty()
@@ -182,7 +184,7 @@ class EmvTagParserTest {
         )
 
         // When
-        val cardholderData = EmvTagParser.parseCardholderData(listOf(data))
+        val cardholderData = parser.parseCardholderData(listOf(data))
 
         // Then - Last 4 should only include valid digits
         assertThat(cardholderData.panLastFour).hasLength(4)
@@ -202,7 +204,7 @@ class EmvTagParserTest {
         )
 
         // When
-        val cardholderData = EmvTagParser.parseCardholderData(listOf(record1, record2))
+        val cardholderData = parser.parseCardholderData(listOf(record1, record2))
 
         // Then - Should use first occurrence (EMV spec)
         assertThat(cardholderData.pan).isEqualTo("4111111111111111")
@@ -218,7 +220,7 @@ class EmvTagParserTest {
         )
 
         // When - Should parse valid tags, skip malformed
-        val tags = EmvTagParser.extractAllTags(mixedData)
+        val tags = parser.extractAllTags(mixedData)
 
         // Then - Should have extracted at least the valid tags
         assertThat(tags).isNotEmpty()
@@ -234,7 +236,7 @@ class EmvTagParserTest {
             0x5F.toByte(), 0x2A.toByte(), 0x02.toByte()
         )
 
-        val appInfo = EmvTagParser.parseApplicationInfo(aid, responseWithPdol)
+        val appInfo = parser.parseApplicationInfo(aid, responseWithPdol)
 
         assertThat(appInfo.pdol).isNotNull()
         assertThat(appInfo.pdol?.length).isAtLeast(1)

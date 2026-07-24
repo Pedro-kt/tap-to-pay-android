@@ -1,12 +1,17 @@
 package com.yumedev.taptopayandroid.presentation.viewmodel
 
+import android.nfc.Tag
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
+import com.yumedev.taptopayandroid.data.datasource.nfc.NfcManager
 import com.yumedev.taptopayandroid.domain.model.*
-import com.yumedev.taptopayandroid.domain.repository.NfcRepository
+import com.yumedev.taptopayandroid.domain.usecase.PlayFailedSoundUseCase
+import com.yumedev.taptopayandroid.domain.usecase.PlaySuccessSoundUseCase
+import com.yumedev.taptopayandroid.domain.usecase.ReadCardUseCase
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
@@ -20,14 +25,27 @@ class TapToPayViewModelTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var mockRepository: NfcRepository
+    private lateinit var mockReadCardUseCase: ReadCardUseCase
+    private lateinit var mockPlaySuccessSoundUseCase: PlaySuccessSoundUseCase
+    private lateinit var mockPlayFailedSoundUseCase: PlayFailedSoundUseCase
+    private lateinit var mockNfcManager: NfcManager
     private lateinit var viewModel: TapToPayViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        mockRepository = mockk()
-        viewModel = TapToPayViewModel(mockRepository)
+        mockReadCardUseCase = mockk()
+        mockPlaySuccessSoundUseCase = mockk(relaxed = true)
+        mockPlayFailedSoundUseCase = mockk(relaxed = true)
+        mockNfcManager = mockk(relaxed = true) {
+            every { nfcTagFlow } returns MutableSharedFlow<Tag>()
+        }
+        viewModel = TapToPayViewModel(
+            mockReadCardUseCase,
+            mockPlaySuccessSoundUseCase,
+            mockPlayFailedSoundUseCase,
+            mockNfcManager
+        )
     }
 
     @After
@@ -250,7 +268,15 @@ class TapToPayViewModelTest {
     @Test
     fun `ViewModel initialization completes successfully`() = runTest {
         // Verify that creating a new ViewModel doesn't throw
-        val newViewModel = TapToPayViewModel(mockRepository)
+        val mockNfcManager2 = mockk<NfcManager>(relaxed = true) {
+            every { nfcTagFlow } returns MutableSharedFlow<Tag>()
+        }
+        val newViewModel = TapToPayViewModel(
+            mockReadCardUseCase,
+            mockPlaySuccessSoundUseCase,
+            mockPlayFailedSoundUseCase,
+            mockNfcManager2
+        )
 
         assertThat(newViewModel.nfcState.value).isEqualTo(NfcState.Waiting)
         assertThat(newViewModel.lastAmount.value).isEqualTo("0.00")
@@ -259,7 +285,15 @@ class TapToPayViewModelTest {
 
     @Test
     fun `multiple ViewModels maintain independent state`() = runTest {
-        val viewModel2 = TapToPayViewModel(mockRepository)
+        val mockNfcManager2 = mockk<NfcManager>(relaxed = true) {
+            every { nfcTagFlow } returns MutableSharedFlow<Tag>()
+        }
+        val viewModel2 = TapToPayViewModel(
+            mockReadCardUseCase,
+            mockPlaySuccessSoundUseCase,
+            mockPlayFailedSoundUseCase,
+            mockNfcManager2
+        )
 
         viewModel.startNewTransaction("100.00")
         viewModel2.startNewTransaction("200.00")

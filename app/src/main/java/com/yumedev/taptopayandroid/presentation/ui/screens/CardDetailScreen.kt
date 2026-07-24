@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 import com.yumedev.taptopayandroid.domain.model.ApduCommand
@@ -25,15 +26,18 @@ import com.yumedev.taptopayandroid.presentation.ui.components.CustomTabSelector
 import com.yumedev.taptopayandroid.presentation.ui.components.DetailSearchBar
 import com.yumedev.taptopayandroid.presentation.ui.components.SimplifiedCardView
 import com.yumedev.taptopayandroid.presentation.ui.components.TagCardContent
+import com.yumedev.taptopayandroid.presentation.viewmodel.CardDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardDetailScreen(
     emvCardData: EmvCardData,
     onBack: () -> Unit,
-    preferencesManager: PreferencesManager
+    viewModel: CardDetailViewModel = hiltViewModel()
 ) {
-    val detailLevel = when (preferencesManager.detailLevel) {
+    val detailLevelString by viewModel.detailLevel.collectAsState()
+
+    val detailLevel = when (detailLevelString) {
         PreferencesManager.DETAIL_LEVEL_SIMPLE -> DetailLevel.SIMPLE
         PreferencesManager.DETAIL_LEVEL_DETAILED -> DetailLevel.DETAILED
         else -> DetailLevel.DETAILED

@@ -37,6 +37,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,10 +51,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 import com.yumedev.taptopayandroid.domain.model.DetailLevel
 import com.yumedev.taptopayandroid.presentation.ui.components.DetailLevelSelector
+import com.yumedev.taptopayandroid.presentation.viewmodel.SettingsViewModel
 import java.util.Calendar
 import androidx.core.net.toUri
 
@@ -65,7 +68,7 @@ enum class ThemeOption {
 fun SettingsScreen(
     innerPadding: PaddingValues = PaddingValues(),
     onThemeChanged: (String) -> Unit = {},
-    preferencesManager: PreferencesManager
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val packageInfo = remember {
@@ -74,23 +77,24 @@ fun SettingsScreen(
     val versionName = packageInfo.versionName
     val versionText = "$versionName"
 
-    val initialTheme = when (preferencesManager.themeMode) {
+    val themeMode by viewModel.themeMode.collectAsState()
+    val soundEnabled by viewModel.soundEnabled.collectAsState()
+    val detailLevel by viewModel.detailLevel.collectAsState()
+
+    val selectedTheme = when (themeMode) {
         PreferencesManager.THEME_LIGHT -> ThemeOption.LIGHT
         PreferencesManager.THEME_DARK -> ThemeOption.DARK
         PreferencesManager.THEME_SYSTEM -> ThemeOption.SYSTEM
         else -> ThemeOption.SYSTEM
     }
 
-    val initialDetailLevel = when (preferencesManager.detailLevel) {
+    val selectedDetailLevel = when (detailLevel) {
         PreferencesManager.DETAIL_LEVEL_SIMPLE -> DetailLevel.SIMPLE
         PreferencesManager.DETAIL_LEVEL_DETAILED -> DetailLevel.DETAILED
         else -> DetailLevel.DETAILED
     }
 
-    var selectedTheme by remember { mutableStateOf(initialTheme) }
-    var soundEnabled by remember { mutableStateOf(preferencesManager.isSoundEnabled) }
     var rawLogsEnabled by remember { mutableStateOf(true) }
-    var selectedDetailLevel by remember { mutableStateOf(initialDetailLevel) }
 
     LazyColumn(
         modifier = Modifier
@@ -119,13 +123,13 @@ fun SettingsScreen(
                     ThemeSelector(
                         selectedTheme = selectedTheme,
                         onThemeSelected = { newTheme ->
-                            selectedTheme = newTheme
-                            val themeMode = when (newTheme) {
+                            val newThemeMode = when (newTheme) {
                                 ThemeOption.LIGHT -> PreferencesManager.THEME_LIGHT
                                 ThemeOption.DARK -> PreferencesManager.THEME_DARK
                                 ThemeOption.SYSTEM -> PreferencesManager.THEME_SYSTEM
                             }
-                            onThemeChanged(themeMode)
+                            viewModel.updateThemeMode(newThemeMode)
+                            onThemeChanged(newThemeMode)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -145,8 +149,7 @@ fun SettingsScreen(
                     subtitle = stringResource(R.string.sound_on_detect_subtitle),
                     checked = soundEnabled,
                     onCheckedChange = {
-                        soundEnabled = it
-                        preferencesManager.isSoundEnabled = it
+                        viewModel.updateSoundEnabled(it)
                     }
                 )
             }
@@ -175,12 +178,11 @@ fun SettingsScreen(
                     DetailLevelSelector(
                         selectedLevel = selectedDetailLevel,
                         onLevelSelected = { newLevel ->
-                            selectedDetailLevel = newLevel
                             val detailLevelMode = when (newLevel) {
                                 DetailLevel.SIMPLE -> PreferencesManager.DETAIL_LEVEL_SIMPLE
                                 DetailLevel.DETAILED -> PreferencesManager.DETAIL_LEVEL_DETAILED
                             }
-                            preferencesManager.detailLevel = detailLevelMode
+                            viewModel.updateDetailLevel(detailLevelMode)
                         },
                         modifier = Modifier
                             .fillMaxWidth()

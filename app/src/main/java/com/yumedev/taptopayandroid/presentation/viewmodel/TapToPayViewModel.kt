@@ -3,11 +3,12 @@ package com.yumedev.taptopayandroid.presentation.viewmodel
 import android.nfc.Tag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yumedev.taptopayandroid.data.datasource.audio.SoundManager
 import com.yumedev.taptopayandroid.data.datasource.nfc.NfcManager
 import com.yumedev.taptopayandroid.domain.model.EmvCardData
 import com.yumedev.taptopayandroid.domain.model.NfcState
-import com.yumedev.taptopayandroid.domain.repository.NfcRepository
+import com.yumedev.taptopayandroid.domain.usecase.PlayFailedSoundUseCase
+import com.yumedev.taptopayandroid.domain.usecase.PlaySuccessSoundUseCase
+import com.yumedev.taptopayandroid.domain.usecase.ReadCardUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,8 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TapToPayViewModel @Inject constructor(
-    private val nfcRepository: NfcRepository,
-    private val soundManager: SoundManager,
+    private val readCardUseCase: ReadCardUseCase,
+    private val playSuccessSoundUseCase: PlaySuccessSoundUseCase,
+    private val playFailedSoundUseCase: PlayFailedSoundUseCase,
     private val nfcManager: NfcManager
 ) : ViewModel() {
 
@@ -44,17 +46,16 @@ class TapToPayViewModel @Inject constructor(
 
     private fun processNfcTag(tag: Tag) {
         viewModelScope.launch {
-            // Read card immediately and transition directly to Success or Error
-            val result = nfcRepository.readCard(tag)
+            val result = readCardUseCase(tag)
 
             _nfcState.value = result.fold(
                 onSuccess = { emvCardData ->
                     _lastEmvCardData.value = emvCardData
-                    soundManager.playSuccess()
+                    playSuccessSoundUseCase()
                     NfcState.Success(emvCardData)
                 },
                 onFailure = { exception ->
-                    soundManager.playFailed()
+                    playFailedSoundUseCase()
                     NfcState.Error(exception.message ?: "Unknown error reading card")
                 }
             )

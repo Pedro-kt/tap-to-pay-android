@@ -19,7 +19,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.yumedev.taptopayandroid.data.preferences.PreferencesManager
 import com.yumedev.taptopayandroid.domain.model.*
 import com.yumedev.taptopayandroid.presentation.ui.screens.*
 import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
@@ -28,8 +27,7 @@ import com.yumedev.taptopayandroid.presentation.viewmodel.TapToPayViewModel
 fun NavGraph(
     navController: NavHostController,
     innerPadding: PaddingValues,
-    onThemeChanged: (String) -> Unit = {},
-    preferencesManager: PreferencesManager
+    onThemeChanged: (String) -> Unit = {}
 ) {
     val sharedViewModel: TapToPayViewModel = hiltViewModel()
 
@@ -102,8 +100,7 @@ fun NavGraph(
         composable(route = NavigationRoutes.Settings.route) {
             SettingsScreen(
                 innerPadding = innerPadding,
-                onThemeChanged = onThemeChanged,
-                preferencesManager = preferencesManager
+                onThemeChanged = onThemeChanged
             )
         }
 
@@ -166,8 +163,7 @@ fun NavGraph(
                     emvCardData = data,
                     onBack = {
                         navController.popBackStack(NavigationRoutes.Home.route, inclusive = false)
-                    },
-                    preferencesManager = preferencesManager
+                    }
                 )
             } ?: run {
                 // Fallback if no data available

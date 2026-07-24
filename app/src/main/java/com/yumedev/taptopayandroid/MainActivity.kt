@@ -90,8 +90,7 @@ class MainActivity : ComponentActivity() {
                     NavGraph(
                         navController = navController,
                         innerPadding = innerPadding,
-                        onThemeChanged = onThemeChanged,
-                        preferencesManager = preferencesManager
+                        onThemeChanged = onThemeChanged
                     )
                 }
             }
