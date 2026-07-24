@@ -4,7 +4,10 @@ import android.nfc.Tag
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.yumedev.taptopayandroid.data.datasource.nfc.NfcManager
+import com.yumedev.taptopayandroid.data.repository.NfcRepositoryImpl
 import com.yumedev.taptopayandroid.domain.model.*
+import com.yumedev.taptopayandroid.domain.repository.NfcEventRepository
+import com.yumedev.taptopayandroid.domain.repository.NfcRepository
 import com.yumedev.taptopayandroid.domain.usecase.PlayFailedSoundUseCase
 import com.yumedev.taptopayandroid.domain.usecase.PlaySuccessSoundUseCase
 import com.yumedev.taptopayandroid.domain.usecase.ReadCardUseCase
@@ -28,7 +31,7 @@ class TapToPayViewModelTest {
     private lateinit var mockReadCardUseCase: ReadCardUseCase
     private lateinit var mockPlaySuccessSoundUseCase: PlaySuccessSoundUseCase
     private lateinit var mockPlayFailedSoundUseCase: PlayFailedSoundUseCase
-    private lateinit var mockNfcManager: NfcManager
+    private lateinit var mockNfcEventRepository: NfcEventRepository
     private lateinit var viewModel: TapToPayViewModel
 
     @Before
@@ -37,14 +40,14 @@ class TapToPayViewModelTest {
         mockReadCardUseCase = mockk()
         mockPlaySuccessSoundUseCase = mockk(relaxed = true)
         mockPlayFailedSoundUseCase = mockk(relaxed = true)
-        mockNfcManager = mockk(relaxed = true) {
+        mockNfcEventRepository = mockk(relaxed = true) {
             every { nfcTagFlow } returns MutableSharedFlow<Tag>()
         }
         viewModel = TapToPayViewModel(
             mockReadCardUseCase,
             mockPlaySuccessSoundUseCase,
             mockPlayFailedSoundUseCase,
-            mockNfcManager
+            mockNfcEventRepository
         )
     }
 
@@ -275,7 +278,7 @@ class TapToPayViewModelTest {
             mockReadCardUseCase,
             mockPlaySuccessSoundUseCase,
             mockPlayFailedSoundUseCase,
-            mockNfcManager2
+            mockNfcEventRepository
         )
 
         assertThat(newViewModel.nfcState.value).isEqualTo(NfcState.Waiting)
@@ -292,7 +295,7 @@ class TapToPayViewModelTest {
             mockReadCardUseCase,
             mockPlaySuccessSoundUseCase,
             mockPlayFailedSoundUseCase,
-            mockNfcManager2
+            mockNfcEventRepository
         )
 
         viewModel.startNewTransaction("100.00")

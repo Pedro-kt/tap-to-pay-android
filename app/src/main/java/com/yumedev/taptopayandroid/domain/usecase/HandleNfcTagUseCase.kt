@@ -3,7 +3,12 @@ package com.yumedev.taptopayandroid.domain.usecase
 import android.nfc.Tag
 import android.util.Log
 import com.yumedev.taptopayandroid.domain.repository.NfcEventRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +21,14 @@ class HandleNfcTagUseCase @Inject constructor(
         private const val TAG_DEDUPLICATION_DELAY_MS = 2000L
     }
 
+    private var scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var lastProcessedTagId: String? = null
+    private var clearJob: Job? = null
+
+    // For testing purposes - allows injecting a test scope
+    internal fun setTestScope(testScope: CoroutineScope) {
+        scope = testScope
+    }
 
     // Process an NFC tag discovery event
     suspend operator fun invoke(tag: Tag): Boolean {
@@ -38,12 +50,16 @@ class HandleNfcTagUseCase @Inject constructor(
         return true
     }
 
-    private suspend fun scheduleTagIdClear() {
-        delay(TAG_DEDUPLICATION_DELAY_MS)
-        lastProcessedTagId = null
+    private fun scheduleTagIdClear() {
+        clearJob?.cancel()
+        clearJob = scope.launch {
+            delay(TAG_DEDUPLICATION_DELAY_MS)
+            lastProcessedTagId = null
+        }
     }
 
     fun reset() {
+        clearJob?.cancel()
         lastProcessedTagId = null
     }
 }
