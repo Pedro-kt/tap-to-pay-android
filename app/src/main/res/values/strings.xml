@@ -54,6 +54,13 @@
     <string name="apdu_command_label">C-APDU</string>
     <string name="apdu_response_label">R-APDU</string>
 
+    <!-- Tag Card Content -->
+    <string name="hex_value_label">Hex Value</string>
+    <string name="show_all">Show all</string>
+    <string name="show_less">Show less</string>
+    <string name="decoded_label">Decoded</string>
+    <string name="critical_tag">Critical</string>
+
     <!-- No Data -->
     <string name="no_card_data_available">No card data available</string>
 
