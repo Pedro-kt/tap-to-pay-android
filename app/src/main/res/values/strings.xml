@@ -54,8 +54,57 @@
     <string name="apdu_command_label">C-APDU</string>
     <string name="apdu_response_label">R-APDU</string>
 
+    <!-- Tag Card Content -->
+    <string name="hex_value_label">Hex Value</string>
+    <string name="show_all">Show all</string>
+    <string name="show_less">Show less</string>
+    <string name="decoded_label">Decoded</string>
+    <string name="critical_tag">Critical</string>
+
+    <!-- APDU Command Card -->
+    <string name="show_apdu_structure">Show APDU Structure</string>
+    <string name="hide_apdu_structure">Hide Structure</string>
+    <string name="apdu_structure_title">APDU Structure</string>
+    <string name="bytes_label">bytes</string>
+
+    <!-- APDU Structure Fields -->
+    <string name="apdu_field_cla">CLA</string>
+    <string name="apdu_field_ins">INS</string>
+    <string name="apdu_field_p1">P1</string>
+    <string name="apdu_field_p2">P2</string>
+    <string name="apdu_field_lc">Lc</string>
+    <string name="apdu_field_data">Data</string>
+    <string name="apdu_field_le">Le</string>
+    <string name="apdu_cla_description">Class byte - Command type</string>
+    <string name="apdu_p1_description">Parameter 1</string>
+    <string name="apdu_p2_description">Parameter 2</string>
+    <string name="apdu_lc_description">Data length: %1$d bytes</string>
+    <string name="apdu_data_description">%1$d bytes of command data</string>
+    <string name="apdu_le_description">Expected response length</string>
+    <string name="apdu_le_256_description">Expected response length (256 bytes if 00)</string>
+    <string name="apdu_additional_data">Additional command data</string>
+
+    <!-- APDU INS Descriptions -->
+    <string name="ins_select">SELECT - Select file/application</string>
+    <string name="ins_read_binary">READ BINARY - Read binary data</string>
+    <string name="ins_read_record">READ RECORD - Read record</string>
+    <string name="ins_get_data">GET DATA - Retrieve data object</string>
+    <string name="ins_verify">VERIFY - PIN verification</string>
+    <string name="ins_internal_auth">INTERNAL AUTHENTICATE</string>
+    <string name="ins_external_auth">EXTERNAL AUTHENTICATE</string>
+    <string name="ins_get_challenge">GET CHALLENGE</string>
+    <string name="ins_get_response">GET RESPONSE</string>
+    <string name="ins_instruction">Instruction code</string>
+
     <!-- No Data -->
     <string name="no_card_data_available">No card data available</string>
+
+    <!-- History Screen -->
+    <string name="history_title">History</string>
+    <string name="history_coming_soon">Coming soon: View your\nNFC transaction history here</string>
+
+    <!-- Home Screen -->
+    <string name="start_payment_button">Start Payment</string>
 
     <!-- Settings Screen -->
     <string name="settings">Settings</string>

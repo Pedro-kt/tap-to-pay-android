@@ -161,7 +161,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.weight(0.3f))
 
         PrimaryButton(
-            text = "Start Payment",
+            text = stringResource(R.string.start_payment_button),
             onClick = { onGeneratePayment(displayAmount) },
             modifier = Modifier.padding(16.dp),
             isEnable = displayAmount != "0.00",
