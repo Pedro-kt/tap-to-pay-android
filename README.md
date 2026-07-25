@@ -29,10 +29,14 @@
 **Note:** All card data shown in screenshots are test/sample cards, not real payment cards.
 
 <div align="center">
-  <img src="screenshots/home_screen.jpeg" width="200"/>
-  <img src="screenshots/reader_screen.jpeg" width="200"/>
-  <img src="screenshots/card_detail.jpeg" width="200"/>
-  <img src="screenshots/settings_screen.jpeg" width="200"/>
+  <table>
+    <tr>
+      <td><img src="screenshots/home_screen.jpeg" width="200"/></td>
+      <td><img src="screenshots/reader_screen.jpeg" width="200"/></td>
+      <td><img src="screenshots/card_detail.jpeg" width="200"/></td>
+      <td><img src="screenshots/settings_screen.jpeg" width="200"/></td>
+    </tr>
+  </table>
 </div>
 
 ---
