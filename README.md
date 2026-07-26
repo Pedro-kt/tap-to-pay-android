@@ -4,7 +4,7 @@
 
 **A modern Android NFC card reader application for reading and parsing EMV contactless payment cards**
 
-[Features](#features) • [Tech Stack](#tech-stack) • [Installation](#installation) • [Disclaimer](#important-disclaimer)
+[Features](#features) • [Tech Stack](#tech-stack) • [Installation](#installation) • [Testing](#testing) • [Disclaimer](#important-disclaimer)
 
 </div>
 
@@ -53,6 +53,9 @@
 - **Transaction Data**: Card number, expiration date, and card type detection
 - **Cardholder Data**: Cardholder name when available
 - **EMV Tags Viewer**: Browse all EMV tags organized by category with search functionality
+- **Tag Documentation**: Detailed information for 43 EMV tags with purpose, format, and source
+- **PAN Validation**: Automatic Luhn algorithm validation for card numbers with visual indicators
+- **AIP Decoder**: Bit-level decoding of Application Interchange Profile showing authentication capabilities
 
 ### Modern UI/UX
 - **Material Design 3**: Clean, modern interface following Material You guidelines
@@ -76,7 +79,9 @@
 - **Material 3**
 
 ### Architecture & Libraries
-- **MVVM Pattern** - Clean architecture separation
+- **Clean Architecture** - Domain, Data, and Presentation layer separation
+- **MVVM Pattern** - ViewModel-based architecture
+- **Hilt** - Dependency injection
 - **Coroutines** - Asynchronous programming
 - **StateFlow** - Reactive state management
 
@@ -84,6 +89,12 @@
 - **NFC API** - Android NFC framework
 - **ISO-DEP** - ISO 14443-4 protocol for contactless cards
 - **EMV Parsing** - Custom EMV tag parser implementation
+
+### Testing
+- **JUnit** - Unit testing framework
+- **Truth** - Fluent assertion library
+- **MockK** - Kotlin mocking library
+- **Coroutines Test** - Testing coroutines and flows
 
 ### Tools
 - **Gradle KTS**
@@ -134,15 +145,77 @@
 
 ---
 
+## Testing
+
+The project includes comprehensive unit tests covering core functionality with high code coverage.
+
+### Running Tests
+
+**Via Android Studio:**
+1. Open the project in Android Studio
+2. Navigate to the test file or package you want to run
+3. Right-click and select "Run Tests"
+4. View results in the test runner panel
+
+**Via Command Line:**
+```bash
+# Run all unit tests
+./gradlew testDebugUnitTest
+
+# Run tests with coverage report
+./gradlew testDebugUnitTestCoverage
+
+# Run specific test class
+./gradlew testDebugUnitTest --tests "com.yumedev.taptopayandroid.util.CardValidatorTest"
+
+# Clean and run all tests
+./gradlew cleanTest testDebugUnitTest
+```
+
+**View Test Reports:**
+```bash
+# Test results HTML report
+open app/build/reports/tests/testDebugUnitTest/index.html
+
+# Coverage report (if generated)
+open app/build/reports/coverage/test/debug/index.html
+```
+
+### Test Coverage
+
+Current test suite includes:
+
+- **CardValidatorTest**: 22 tests for Luhn algorithm validation
+- **ValidatePanUseCaseTest**: 19 tests for PAN validation use case
+- **AipDecoderTest**: 25 tests for AIP bit decoding
+- **EmvTagParserTest**: 15 tests for EMV tag parsing
+- **NfcCardReaderTest**: 8 tests for NFC communication
+- **Repository Tests**: Coverage for audio, NFC events, and preferences
+- **UseCase Tests**: Coverage for settings, theme, and NFC handling
+- **ViewModel Tests**: Coverage for card details, settings, and main flow
+
+All tests use **JUnit**, **Truth** assertions, and **MockK** for mocking.
+
+---
+
 ## EMV Tags Supported
 
 The app recognizes and parses EMV tags including:
 
 - **Application Info**: AID (4F), Application Label (50), Priority (87)
-- **Transaction Data**: PAN (5A), Expiration (5F24), Service Code (5F30)
+- **Transaction Data**: PAN (5A) with Luhn validation, Expiration (5F24), Service Code (5F30)
 - **Cardholder Data**: Name (5F20), Language (5F2D)
-- **Card Details**: Track 2 (57), PDOL (9F38), AFL (94)
+- **Card Details**: Track 2 (57), PDOL (9F38), AFL (94), AIP (82) with bit decoder
 - And many more...
+
+### Tag Documentation System
+
+The app includes comprehensive documentation for 43 EMV tags, accessible via info buttons on each tag card:
+
+- **Detailed descriptions**: Purpose and meaning of each tag
+- **Format specifications**: Data structure and encoding information
+- **Source references**: EMV specification sources (EMVCo Book 3, ISO 7816)
+- **Category organization**: Tags grouped by Card, Application, Transaction, Cryptographic, and Processing Data
 
 ---
 
