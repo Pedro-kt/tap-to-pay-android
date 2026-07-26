@@ -26,12 +26,6 @@ object DataSourceModule {
 
     @Provides
     @Singleton
-    fun provideEmvTagParser(): EmvTagParser {
-        return EmvTagParser()
-    }
-
-    @Provides
-    @Singleton
     fun provideSoundManager(
         @ApplicationContext context: Context,
         preferencesManager: PreferencesManager
