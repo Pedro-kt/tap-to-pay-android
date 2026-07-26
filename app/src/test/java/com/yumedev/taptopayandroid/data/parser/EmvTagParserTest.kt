@@ -2,12 +2,13 @@ package com.yumedev.taptopayandroid.data.parser
 
 import com.google.common.truth.Truth.assertThat
 import com.yumedev.taptopayandroid.domain.model.CardType
+import com.yumedev.taptopayandroid.domain.usecase.ValidatePanUseCase
 import org.junit.Test
 
-//Unit tests for EmvTagParser
 class EmvTagParserTest {
 
-    private val parser = EmvTagParser()
+    private val validatePanUseCase = ValidatePanUseCase()
+    private val parser = EmvTagParser(validatePanUseCase)
 
     // Malformed TLV Data Tests
 

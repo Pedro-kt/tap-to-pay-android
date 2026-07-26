@@ -1,12 +1,14 @@
 package com.yumedev.taptopayandroid.data.datasource.nfc
 
 import com.yumedev.taptopayandroid.data.parser.EmvTagParser
+import com.yumedev.taptopayandroid.domain.usecase.ValidatePanUseCase
 import org.junit.Test
 import com.google.common.truth.Truth.assertThat
 
 class NfcCardReaderTest {
 
-    private val emvTagParser = EmvTagParser()
+    private val validatePanUseCase = ValidatePanUseCase()
+    private val emvTagParser = EmvTagParser(validatePanUseCase)
     private val reader = NfcCardReader(emvTagParser)
 
     @Test

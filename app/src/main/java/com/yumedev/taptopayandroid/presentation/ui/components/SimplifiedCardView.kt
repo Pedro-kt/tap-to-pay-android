@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Person
@@ -17,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.domain.model.EmvCardData
+import com.yumedev.taptopayandroid.domain.model.ValidationType
 
 @Composable
 fun SimplifiedCardView(
@@ -74,7 +77,8 @@ fun SimplifiedCardView(
                     SimplifiedCardField(
                         label = stringResource(R.string.card_number_label),
                         value = "•••• ${emvCardData.cardholderData.panLastFour}",
-                        badge = emvCardData.cardType.name.take(1)
+                        badge = emvCardData.cardType.name.take(1),
+                        panValidation = emvCardData.cardholderData.panValidation
                     )
 
                     SimplifiedCardField(
@@ -124,7 +128,8 @@ fun SimplifiedCardView(
 private fun SimplifiedCardField(
     label: String,
     value: String,
-    badge: String?
+    badge: String?,
+    panValidation: com.yumedev.taptopayandroid.domain.model.PanValidation? = null
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -150,6 +155,46 @@ private fun SimplifiedCardField(
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         fontWeight = FontWeight.Bold
                     )
+                }
+            }
+
+            panValidation?.let { validation ->
+                Surface(
+                    shape = RoundedCornerShape(4.dp),
+                    color = if (validation.isValid)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
+                        MaterialTheme.colorScheme.errorContainer
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = if (validation.isValid) Icons.Default.Check else Icons.Default.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = if (validation.isValid)
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            else
+                                MaterialTheme.colorScheme.onErrorContainer
+                        )
+                        Text(
+                            text = when (validation.validationType) {
+                                ValidationType.LUHN_VALID -> stringResource(R.string.pan_validation_valid)
+                                ValidationType.LUHN_INVALID -> stringResource(R.string.pan_validation_invalid)
+                                ValidationType.INSUFFICIENT_DIGITS -> stringResource(R.string.pan_validation_insufficient_digits)
+                                ValidationType.INVALID_FORMAT -> stringResource(R.string.pan_validation_invalid_format)
+                            },
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (validation.isValid)
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            else
+                                MaterialTheme.colorScheme.onErrorContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }

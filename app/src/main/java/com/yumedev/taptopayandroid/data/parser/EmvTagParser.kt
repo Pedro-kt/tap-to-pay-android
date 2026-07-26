@@ -1,11 +1,14 @@
 package com.yumedev.taptopayandroid.data.parser
 
 import com.yumedev.taptopayandroid.domain.model.*
+import com.yumedev.taptopayandroid.domain.usecase.ValidatePanUseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class EmvTagParser @Inject constructor() {
+class EmvTagParser @Inject constructor(
+    private val validatePanUseCase: ValidatePanUseCase
+) {
 
     fun parseTag(tag: String, value: ByteArray): EmvTag {
         val tagInfo = EMV_TAG_DEFINITIONS[tag] ?: TagDefinition(tag, "Unknown Tag", "")
@@ -116,6 +119,8 @@ class EmvTagParser @Inject constructor() {
         val track2 = findTag(allData, "57")?.toHexString()
         val panSeqNum = findTag(allData, "5F34")?.firstOrNull()?.toInt()
 
+        val panValidation = validatePanUseCase(pan)
+
         return CardholderData(
             pan = pan,
             panLastFour = panLastFour,
@@ -124,7 +129,8 @@ class EmvTagParser @Inject constructor() {
             cardholderName = cardholderName,
             cardholderNameExtended = cardholderNameExtended,
             track2Equivalent = track2,
-            panSequenceNumber = panSeqNum
+            panSequenceNumber = panSeqNum,
+            panValidation = panValidation
         )
     }
 

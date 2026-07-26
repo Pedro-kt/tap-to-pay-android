@@ -135,4 +135,437 @@
     <string name="developer_github">github.com/Pedro-kt</string>
     <string name="repository_title">Repository</string>
     <string name="repository_url">github.com/Pedro-kt/tap-to-pay-android</string>
+
+    <!-- Tag Info Dialog -->
+    <string name="tag_info_title">Tag Information</string>
+    <string name="tag_info_purpose_label">Purpose</string>
+    <string name="tag_info_format_label">Format</string>
+    <string name="tag_info_source_label">Source</string>
+    <string name="tag_info_category_label">Category</string>
+    <string name="close">Close</string>
+
+    <!-- Tag Categories -->
+    <string name="tag_category_application">Application</string>
+    <string name="tag_category_transaction">Transaction</string>
+    <string name="tag_category_cardholder">Cardholder</string>
+    <string name="tag_category_security">Security</string>
+    <string name="tag_category_processing">Processing</string>
+    <string name="tag_category_terminal">Terminal</string>
+    <string name="tag_category_other">Other</string>
+
+    <!-- Tag 4F - Application Identifier (AID) -->
+    <string name="tag_4F_name">Application Identifier (AID)</string>
+    <string name="tag_4F_description">Uniquely identifies the payment application on the card. Used by the terminal to select the correct application for processing the transaction.</string>
+    <string name="tag_4F_purpose">Identifies which payment application to use (Visa, Mastercard, etc.). The terminal uses this to know how to communicate with the card.</string>
+    <string name="tag_4F_format">Binary, typically 5-16 bytes. Registered with ISO and managed by payment networks.</string>
+    <string name="tag_4F_source">Returned by the card in response to SELECT PPSE or SELECT AID commands.</string>
+
+    <!-- Tag 50 - Application Label -->
+    <string name="tag_50_name">Application Label</string>
+    <string name="tag_50_description">Human-readable name of the payment application. Displayed to merchants and cardholders to identify the card brand.</string>
+    <string name="tag_50_purpose">Provides a user-friendly name for the application, such as VISA DEBIT or MASTERCARD.</string>
+    <string name="tag_50_format">ASCII text, maximum 16 characters.</string>
+    <string name="tag_50_source">Stored on the card and returned during application selection.</string>
+
+    <!-- Tag 57 - Track 2 Equivalent Data -->
+    <string name="tag_57_name">Track 2 Equivalent Data</string>
+    <string name="tag_57_description">Contains the same data that would be on the magnetic stripe Track 2. Includes PAN, expiration date, and service code in a compact format.</string>
+    <string name="tag_57_purpose">Provides backwards compatibility with magnetic stripe systems while maintaining EMV security.</string>
+    <string name="tag_57_format">BCD encoded, up to 19 bytes. Format: PAN, separator (D), expiration (YYMM), service code, discretionary data.</string>
+    <string name="tag_57_source">Read from card records after GPO command execution.</string>
+
+    <!-- Tag 5A - Primary Account Number (PAN) -->
+    <string name="tag_5A_name">Primary Account Number (PAN)</string>
+    <string name="tag_5A_description">The card number used to identify the account. This is the main identifier for routing transactions to the correct issuer.</string>
+    <string name="tag_5A_purpose">Uniquely identifies the cardholder account. Used for authorization and settlement of transactions.</string>
+    <string name="tag_5A_format">BCD compressed, 13-19 digits. Includes issuer identification number and account number.</string>
+    <string name="tag_5A_source">Retrieved from card records during transaction processing.</string>
+
+    <!-- Tag 5F20 - Cardholder Name -->
+    <string name="tag_5F20_name">Cardholder Name</string>
+    <string name="tag_5F20_description">Name of the individual or organization to whom the card was issued. Used for verification and receipts.</string>
+    <string name="tag_5F20_purpose">Identifies the authorized cardholder. Can be displayed on receipts and used for manual verification.</string>
+    <string name="tag_5F20_format">ASCII text, 2-26 characters. Format: LASTNAME/FIRSTNAME or organization name.</string>
+    <string name="tag_5F20_source">Stored on card and read from application records.</string>
+
+    <!-- Tag 5F24 - Application Expiration Date -->
+    <string name="tag_5F24_name">Application Expiration Date</string>
+    <string name="tag_5F24_description">Date after which the application on the card is no longer valid for transactions.</string>
+    <string name="tag_5F24_purpose">Determines if the card is still valid. Terminal rejects transactions if current date exceeds this value.</string>
+    <string name="tag_5F24_format">BCD encoded, 3 bytes in format YYMMDD.</string>
+    <string name="tag_5F24_source">Read from card application data.</string>
+
+    <!-- Tag 5F25 - Application Effective Date -->
+    <string name="tag_5F25_name">Application Effective Date</string>
+    <string name="tag_5F25_description">Date from which the application on the card becomes valid for use.</string>
+    <string name="tag_5F25_purpose">Prevents use of the card before it becomes active. Terminal checks that current date is after this value.</string>
+    <string name="tag_5F25_format">BCD encoded, 3 bytes in format YYMMDD.</string>
+    <string name="tag_5F25_source">Stored in card application data.</string>
+
+    <!-- Tag 5F28 - Issuer Country Code -->
+    <string name="tag_5F28_name">Issuer Country Code</string>
+    <string name="tag_5F28_description">Identifies the country of the institution that issued the card using ISO 3166-1 numeric code.</string>
+    <string name="tag_5F28_purpose">Used for country-specific processing rules, fraud detection, and compliance with regional regulations.</string>
+    <string name="tag_5F28_format">Numeric, 3 digits according to ISO 3166-1 standard.</string>
+    <string name="tag_5F28_source">Configured by issuer and stored on card.</string>
+
+    <!-- Tag 5F2A - Transaction Currency Code -->
+    <string name="tag_5F2A_name">Transaction Currency Code</string>
+    <string name="tag_5F2A_description">Indicates the currency in which the transaction amount is expressed using ISO 4217 code.</string>
+    <string name="tag_5F2A_purpose">Ensures both terminal and card agree on transaction currency. Critical for international transactions and currency conversion.</string>
+    <string name="tag_5F2A_format">Numeric, 2 bytes. ISO 4217 currency code (e.g., 0840 for USD, 0978 for EUR).</string>
+    <string name="tag_5F2A_source">Sent by terminal to card, or read from card for offline transactions.</string>
+
+    <!-- Tag 5F2D - Language Preference -->
+    <string name="tag_5F2D_name">Language Preference</string>
+    <string name="tag_5F2D_description">Indicates the cardholder preferred language for terminal display and receipt printing.</string>
+    <string name="tag_5F2D_purpose">Allows terminals to display messages in the cardholder preferred language when available.</string>
+    <string name="tag_5F2D_format">ASCII, 2-8 characters. ISO 639 language codes (e.g., en, es, fr).</string>
+    <string name="tag_5F2D_source">Stored on card based on cardholder preference during personalization.</string>
+
+    <!-- Tag 5F30 - Service Code -->
+    <string name="tag_5F30_name">Service Code</string>
+    <string name="tag_5F30_description">Defines the services and restrictions applicable to the card, inherited from magnetic stripe specifications.</string>
+    <string name="tag_5F30_purpose">Indicates card usage restrictions, PIN requirements, and authorization methods.</string>
+    <string name="tag_5F30_format">Numeric, 3 digits. Each digit position has specific meaning for card capabilities.</string>
+    <string name="tag_5F30_source">Retrieved from card data, usually part of Track 2 data.</string>
+
+    <!-- Tag 5F34 - PAN Sequence Number -->
+    <string name="tag_5F34_name">PAN Sequence Number</string>
+    <string name="tag_5F34_description">Distinguishes between separate cards with the same PAN, such as when a replacement card is issued.</string>
+    <string name="tag_5F34_purpose">Allows multiple physical cards to exist with the same account number while being uniquely identifiable.</string>
+    <string name="tag_5F34_format">Numeric, 1 byte. Values from 00 to 99.</string>
+    <string name="tag_5F34_source">Assigned by issuer during card personalization.</string>
+
+    <!-- Tag 82 - Application Interchange Profile -->
+    <string name="tag_82_name">Application Interchange Profile (AIP)</string>
+    <string name="tag_82_description">Indicates the capabilities of the card application, including supported authentication methods and processing options.</string>
+    <string name="tag_82_purpose">Informs terminal which security features the card supports (SDA, DDA, CDA) and what processing is available.</string>
+    <string name="tag_82_format">Binary, 2 bytes. Each bit represents a specific capability or feature.</string>
+    <string name="tag_82_source">Returned by card in response to GET PROCESSING OPTIONS command.</string>
+
+    <!-- Tag 84 - Dedicated File Name -->
+    <string name="tag_84_name">Dedicated File (DF) Name</string>
+    <string name="tag_84_description">The name of the Dedicated File that represents the payment application. Typically same as AID.</string>
+    <string name="tag_84_purpose">Used in file selection commands to access the specific payment application on the card.</string>
+    <string name="tag_84_format">Binary, 5-16 bytes. Usually identical to the Application Identifier.</string>
+    <string name="tag_84_source">Returned during application selection process.</string>
+
+    <!-- Tag 87 - Application Priority Indicator -->
+    <string name="tag_87_name">Application Priority Indicator</string>
+    <string name="tag_87_description">Indicates the priority of this application among multiple applications on the card for automatic selection.</string>
+    <string name="tag_87_purpose">Helps terminal decide which application to select when card has multiple payment applications.</string>
+    <string name="tag_87_format">Binary, 1 byte. Lower values indicate higher priority.</string>
+    <string name="tag_87_source">Defined by issuer and stored in PPSE response.</string>
+
+    <!-- Tag 8C - CDOL1 -->
+    <string name="tag_8C_name">Card Risk Management Data Object List 1</string>
+    <string name="tag_8C_description">List of data objects required by card for risk management in the first GENERATE AC command.</string>
+    <string name="tag_8C_purpose">Tells terminal what data to provide when requesting the first application cryptogram for transaction authorization.</string>
+    <string name="tag_8C_format">Binary DOL (Data Object List) format. Lists tags and lengths of required data.</string>
+    <string name="tag_8C_source">Retrieved from card during application initialization.</string>
+
+    <!-- Tag 8D - CDOL2 -->
+    <string name="tag_8D_name">Card Risk Management Data Object List 2</string>
+    <string name="tag_8D_description">List of data objects required by card for risk management in the second GENERATE AC command.</string>
+    <string name="tag_8D_purpose">Specifies data needed for second cryptogram generation, typically used for transaction completion or clearing.</string>
+    <string name="tag_8D_format">Binary DOL format. May differ from CDOL1 based on transaction flow.</string>
+    <string name="tag_8D_source">Retrieved from card application data.</string>
+
+    <!-- Tag 8E - CVM List -->
+    <string name="tag_8E_name">Cardholder Verification Method List</string>
+    <string name="tag_8E_description">Prioritized list of methods the card supports for verifying the cardholder identity (PIN, signature, etc.).</string>
+    <string name="tag_8E_purpose">Determines how cardholder verification should be performed based on transaction conditions and amount.</string>
+    <string name="tag_8E_format">Binary, variable length. Contains CVM codes, conditions, and amount thresholds.</string>
+    <string name="tag_8E_source">Read from card application configuration.</string>
+
+    <!-- Tag 8F - CA Public Key Index -->
+    <string name="tag_8F_name">Certification Authority Public Key Index</string>
+    <string name="tag_8F_description">Index identifying which CA public key to use for verifying the issuer public key certificate.</string>
+    <string name="tag_8F_purpose">Enables terminal to locate the correct public key for certificate chain validation in offline authentication.</string>
+    <string name="tag_8F_format">Binary, 1 byte. Index value assigned by payment scheme.</string>
+    <string name="tag_8F_source">Stored on card as part of security configuration.</string>
+
+    <!-- Tag 90 - Issuer Public Key Certificate -->
+    <string name="tag_90_name">Issuer Public Key Certificate</string>
+    <string name="tag_90_description">Certificate containing the issuer public key, signed by the Certification Authority for offline authentication.</string>
+    <string name="tag_90_purpose">Allows terminal to verify authenticity of issuer public key, which is then used to verify card authenticity.</string>
+    <string name="tag_90_format">Binary, variable length depending on key size. Typically RSA certificate.</string>
+    <string name="tag_90_source">Retrieved from card during offline authentication process.</string>
+
+    <!-- Tag 92 - Issuer Public Key Remainder -->
+    <string name="tag_92_name">Issuer Public Key Remainder</string>
+    <string name="tag_92_description">Remaining portion of issuer public key when key is too large to fit in the certificate.</string>
+    <string name="tag_92_purpose">Combined with certificate to reconstruct complete issuer public key for authentication.</string>
+    <string name="tag_92_format">Binary, variable length. Appended to key recovered from certificate.</string>
+    <string name="tag_92_source">Read from card along with issuer public key certificate.</string>
+
+    <!-- Tag 94 - Application File Locator -->
+    <string name="tag_94_name">Application File Locator (AFL)</string>
+    <string name="tag_94_description">Indicates locations of application data files on the card that must be read by the terminal.</string>
+    <string name="tag_94_purpose">Tells terminal which files and records to read to obtain all necessary card data for transaction processing.</string>
+    <string name="tag_94_format">Binary, multiple of 4 bytes. Each entry specifies Short File Identifier, record range, and authentication records.</string>
+    <string name="tag_94_source">Returned by card in GET PROCESSING OPTIONS response.</string>
+
+    <!-- Tag 9A - Transaction Date -->
+    <string name="tag_9A_name">Transaction Date</string>
+    <string name="tag_9A_description">Local date when the transaction was initiated at the terminal.</string>
+    <string name="tag_9A_purpose">Used by card for validity checking and transaction logging. Critical for offline transaction approval decisions.</string>
+    <string name="tag_9A_format">Numeric, 3 bytes in format YYMMDD.</string>
+    <string name="tag_9A_source">Provided by terminal and sent to card during transaction.</string>
+
+    <!-- Tag 9C - Transaction Type -->
+    <string name="tag_9C_name">Transaction Type</string>
+    <string name="tag_9C_description">Indicates the type of financial transaction being performed (purchase, withdrawal, refund, etc.).</string>
+    <string name="tag_9C_purpose">Informs card of transaction nature to apply appropriate processing rules and limits.</string>
+    <string name="tag_9C_format">Numeric, 1 byte. Standard values: 00 (purchase), 01 (cash), 09 (cashback), 20 (refund).</string>
+    <string name="tag_9C_source">Set by terminal based on transaction context.</string>
+
+    <!-- Tag 9F02 - Amount Authorised -->
+    <string name="tag_9F02_name">Amount, Authorised (Numeric)</string>
+    <string name="tag_9F02_description">Authorized amount of the transaction in the transaction currency, excluding cashback.</string>
+    <string name="tag_9F02_purpose">Primary transaction amount used by card for authorization decisions and limit checking.</string>
+    <string name="tag_9F02_format">Numeric, 6 bytes BCD. Right-justified with leading zeros, no decimal point.</string>
+    <string name="tag_9F02_source">Provided by terminal during transaction initialization.</string>
+
+    <!-- Tag 9F03 - Amount Other -->
+    <string name="tag_9F03_name">Amount, Other (Numeric)</string>
+    <string name="tag_9F03_description">Secondary amount associated with the transaction, such as cashback amount.</string>
+    <string name="tag_9F03_purpose">Allows separate tracking of additional amounts beyond the primary purchase amount.</string>
+    <string name="tag_9F03_format">Numeric, 6 bytes BCD. Same format as authorized amount.</string>
+    <string name="tag_9F03_source">Provided by terminal when transaction includes cashback or other secondary amount.</string>
+
+    <!-- Tag 9F07 - Application Usage Control -->
+    <string name="tag_9F07_name">Application Usage Control</string>
+    <string name="tag_9F07_description">Indicates issuer restrictions on the geographic usage and services available for the application.</string>
+    <string name="tag_9F07_purpose">Enforces restrictions like domestic-only use, ATM restrictions, or service limitations.</string>
+    <string name="tag_9F07_format">Binary, 2 bytes. Each bit represents a specific restriction or permission.</string>
+    <string name="tag_9F07_source">Configured by issuer during card personalization.</string>
+
+    <!-- Tag 9F08 - Application Version Number -->
+    <string name="tag_9F08_name">Application Version Number (Card)</string>
+    <string name="tag_9F08_description">Version number of the EMV application on the card, assigned by payment scheme.</string>
+    <string name="tag_9F08_purpose">Ensures compatibility between card and terminal application versions. Used for version-specific processing.</string>
+    <string name="tag_9F08_format">Binary, 2 bytes. Format determined by payment scheme.</string>
+    <string name="tag_9F08_source">Stored on card and read during application selection.</string>
+
+    <!-- Tag 9F0B - Cardholder Name Extended -->
+    <string name="tag_9F0B_name">Cardholder Name Extended</string>
+    <string name="tag_9F0B_description">Extended or alternate cardholder name that may include additional information beyond standard name field.</string>
+    <string name="tag_9F0B_purpose">Provides additional name information when standard name field is insufficient.</string>
+    <string name="tag_9F0B_format">ASCII, variable length up to 45 characters.</string>
+    <string name="tag_9F0B_source">Optionally stored on card for extended name support.</string>
+
+    <!-- Tag 9F0D - Issuer Action Code Default -->
+    <string name="tag_9F0D_name">Issuer Action Code - Default</string>
+    <string name="tag_9F0D_description">Conditions that cause transaction to be rejected by card if online authorization is unavailable.</string>
+    <string name="tag_9F0D_purpose">Defines issuer risk management policy for offline transaction decisions when terminal cannot go online.</string>
+    <string name="tag_9F0D_format">Binary, 5 bytes. Bitmap of Terminal Verification Results conditions.</string>
+    <string name="tag_9F0D_source">Configured by issuer and stored on card.</string>
+
+    <!-- Tag 9F0E - Issuer Action Code Denial -->
+    <string name="tag_9F0E_name">Issuer Action Code - Denial</string>
+    <string name="tag_9F0E_description">Conditions that cause transaction to be denied by card regardless of online capability.</string>
+    <string name="tag_9F0E_purpose">Hard limits set by issuer for unconditional transaction rejection based on risk conditions.</string>
+    <string name="tag_9F0E_format">Binary, 5 bytes. Bitmap of Terminal Verification Results conditions.</string>
+    <string name="tag_9F0E_source">Configured by issuer for risk management.</string>
+
+    <!-- Tag 9F0F - Issuer Action Code Online -->
+    <string name="tag_9F0F_name">Issuer Action Code - Online</string>
+    <string name="tag_9F0F_description">Conditions that cause card to request online authorization from issuer.</string>
+    <string name="tag_9F0F_purpose">Determines when card requires online authorization for additional security or issuer decision.</string>
+    <string name="tag_9F0F_format">Binary, 5 bytes. Bitmap of Terminal Verification Results conditions.</string>
+    <string name="tag_9F0F_source">Configured by issuer based on risk policy.</string>
+
+    <!-- Tag 9F10 - Issuer Application Data -->
+    <string name="tag_9F10_name">Issuer Application Data</string>
+    <string name="tag_9F10_description">Proprietary data from issuer for use in financial processing and clearing.</string>
+    <string name="tag_9F10_purpose">Contains issuer-specific information that may be needed for authorization and settlement processing.</string>
+    <string name="tag_9F10_format">Binary, variable length. Format defined by issuer.</string>
+    <string name="tag_9F10_source">Generated by card and included in authorization request.</string>
+
+    <!-- Tag 9F12 - Application Preferred Name -->
+    <string name="tag_9F12_name">Application Preferred Name</string>
+    <string name="tag_9F12_description">Preferred mnemonic associated with the application, for display purposes.</string>
+    <string name="tag_9F12_purpose">Provides alternative display name that may be more recognizable to cardholder than standard label.</string>
+    <string name="tag_9F12_format">ASCII, 1-16 characters.</string>
+    <string name="tag_9F12_source">Configured during application personalization.</string>
+
+    <!-- Tag 9F1A - Terminal Country Code -->
+    <string name="tag_9F1A_name">Terminal Country Code</string>
+    <string name="tag_9F1A_description">Country code of the terminal location using ISO 3166-1 numeric format.</string>
+    <string name="tag_9F1A_purpose">Used by card to determine if transaction is domestic or international, affecting authorization rules.</string>
+    <string name="tag_9F1A_format">Numeric, 2 bytes. ISO 3166-1 country code.</string>
+    <string name="tag_9F1A_source">Configured in terminal based on deployment location.</string>
+
+    <!-- Tag 9F21 - Transaction Time -->
+    <string name="tag_9F21_name">Transaction Time</string>
+    <string name="tag_9F21_description">Local time when the transaction was initiated at the terminal.</string>
+    <string name="tag_9F21_purpose">Provides precise timestamp for transaction logging and fraud detection.</string>
+    <string name="tag_9F21_format">Numeric, 3 bytes in format HHMMSS.</string>
+    <string name="tag_9F21_source">Provided by terminal from system clock.</string>
+
+    <!-- Tag 9F26 - Application Cryptogram -->
+    <string name="tag_9F26_name">Application Cryptogram</string>
+    <string name="tag_9F26_description">Cryptogram generated by card to provide evidence of transaction authorization. Can be TC, ARQC, or AAC.</string>
+    <string name="tag_9F26_purpose">Proves card authenticity and creates secure proof of transaction that cannot be forged.</string>
+    <string name="tag_9F26_format">Binary, 8 bytes. Cryptographic MAC computed over transaction data.</string>
+    <string name="tag_9F26_source">Generated by card in response to GENERATE AC command.</string>
+
+    <!-- Tag 9F27 - Cryptogram Information Data -->
+    <string name="tag_9F27_name">Cryptogram Information Data</string>
+    <string name="tag_9F27_description">Indicates the type of cryptogram returned by card and reasons for the card decision.</string>
+    <string name="tag_9F27_purpose">Tells terminal what type of cryptogram was generated (approval, online request, or decline) and why.</string>
+    <string name="tag_9F27_format">Binary, 1 byte. Contains cryptogram type and card action codes.</string>
+    <string name="tag_9F27_source">Returned with application cryptogram from card.</string>
+
+    <!-- Tag 9F32 - Issuer Public Key Exponent -->
+    <string name="tag_9F32_name">Issuer Public Key Exponent</string>
+    <string name="tag_9F32_description">Exponent of the issuer public key used in RSA algorithm for offline authentication.</string>
+    <string name="tag_9F32_purpose">Required component for reconstructing issuer public key to verify card authenticity.</string>
+    <string name="tag_9F32_format">Binary, 1 or 3 bytes. Common values are 03 or 010001.</string>
+    <string name="tag_9F32_source">Read from card during authentication process.</string>
+
+    <!-- Tag 9F33 - Terminal Capabilities -->
+    <string name="tag_9F33_name">Terminal Capabilities</string>
+    <string name="tag_9F33_description">Indicates the card data input, CVM, and security capabilities of the terminal.</string>
+    <string name="tag_9F33_purpose">Informs card what features terminal supports so card can make appropriate processing decisions.</string>
+    <string name="tag_9F33_format">Binary, 3 bytes. Bitmaps for card data input methods, CVM capabilities, and security capabilities.</string>
+    <string name="tag_9F33_source">Configured in terminal based on hardware capabilities.</string>
+
+    <!-- Tag 9F34 - CVM Results -->
+    <string name="tag_9F34_name">Cardholder Verification Method Results</string>
+    <string name="tag_9F34_description">Indicates the results of the cardholder verification performed by terminal.</string>
+    <string name="tag_9F34_purpose">Documents which CVM was performed and whether it was successful for auditing and authorization.</string>
+    <string name="tag_9F34_format">Binary, 3 bytes. Contains CVM performed, condition codes, and result.</string>
+    <string name="tag_9F34_source">Generated by terminal after CVM processing.</string>
+
+    <!-- Tag 9F35 - Terminal Type -->
+    <string name="tag_9F35_name">Terminal Type</string>
+    <string name="tag_9F35_description">Indicates the environment of the terminal and its operational control.</string>
+    <string name="tag_9F35_purpose">Helps card apply appropriate risk management based on terminal type (attended, unattended, online, offline).</string>
+    <string name="tag_9F35_format">Numeric, 1 byte. Values like 22 (attended online), 14 (unattended offline).</string>
+    <string name="tag_9F35_source">Configured in terminal based on deployment.</string>
+
+    <!-- Tag 9F36 - Application Transaction Counter -->
+    <string name="tag_9F36_name">Application Transaction Counter (ATC)</string>
+    <string name="tag_9F36_description">Counter incremented by card for each transaction, used for replay attack prevention.</string>
+    <string name="tag_9F36_purpose">Ensures each transaction has unique counter value, making transaction data non-replayable for security.</string>
+    <string name="tag_9F36_format">Binary, 2 bytes. Increments with each GENERATE AC command.</string>
+    <string name="tag_9F36_source">Maintained by card and included in cryptogram generation.</string>
+
+    <!-- Tag 9F37 - Unpredictable Number -->
+    <string name="tag_9F37_name">Unpredictable Number</string>
+    <string name="tag_9F37_description">Random number generated by terminal to ensure uniqueness of each transaction.</string>
+    <string name="tag_9F37_purpose">Provides entropy for cryptogram generation, preventing pre-computation attacks and ensuring transaction uniqueness.</string>
+    <string name="tag_9F37_format">Binary, 4 bytes. Should be randomly generated for each transaction.</string>
+    <string name="tag_9F37_source">Generated by terminal and sent to card during processing.</string>
+
+    <!-- Tag 9F38 - PDOL -->
+    <string name="tag_9F38_name">Processing Options Data Object List</string>
+    <string name="tag_9F38_description">List of terminal data required by card for the GET PROCESSING OPTIONS command.</string>
+    <string name="tag_9F38_purpose">Tells terminal what data to provide when initializing transaction processing with the card.</string>
+    <string name="tag_9F38_format">Binary DOL format. Lists required data objects with their expected lengths.</string>
+    <string name="tag_9F38_source">Retrieved from card during application selection.</string>
+
+    <!-- Tag 9F42 - Application Currency Code -->
+    <string name="tag_9F42_name">Application Currency Code</string>
+    <string name="tag_9F42_description">Currency code of the application according to ISO 4217.</string>
+    <string name="tag_9F42_purpose">Indicates default currency for the application, used when transaction currency differs for conversion.</string>
+    <string name="tag_9F42_format">Numeric, 2 bytes. ISO 4217 currency code.</string>
+    <string name="tag_9F42_source">Stored on card during personalization.</string>
+
+    <!-- Tag 9F44 - Application Currency Exponent -->
+    <string name="tag_9F44_name">Application Currency Exponent</string>
+    <string name="tag_9F44_description">Number of decimal places for the application currency.</string>
+    <string name="tag_9F44_purpose">Defines how to interpret currency amounts (e.g., 2 for cents, 0 for non-decimal currencies).</string>
+    <string name="tag_9F44_format">Numeric, 1 byte. Typically 00 or 02.</string>
+    <string name="tag_9F44_source">Stored with application currency configuration.</string>
+
+    <!-- Tag 9F45 - Data Authentication Code -->
+    <string name="tag_9F45_name">Data Authentication Code</string>
+    <string name="tag_9F45_description">Result of authentication processing for Dynamic Data Authentication.</string>
+    <string name="tag_9F45_purpose">Provides cryptographic proof that card data has not been altered during transaction.</string>
+    <string name="tag_9F45_format">Binary, 2 bytes. Generated during DDA or CDA.</string>
+    <string name="tag_9F45_source">Generated by card as part of dynamic authentication.</string>
+
+    <!-- Tag 9F46 - ICC Public Key Certificate -->
+    <string name="tag_9F46_name">ICC Public Key Certificate</string>
+    <string name="tag_9F46_description">Certificate containing the card (ICC) public key, signed by issuer for offline authentication.</string>
+    <string name="tag_9F46_purpose">Enables terminal to verify card public key, which is used for dynamic data authentication.</string>
+    <string name="tag_9F46_format">Binary, variable length. RSA certificate signed by issuer.</string>
+    <string name="tag_9F46_source">Read from card during DDA or CDA authentication.</string>
+
+    <!-- Tag 9F47 - ICC Public Key Exponent -->
+    <string name="tag_9F47_name">ICC Public Key Exponent</string>
+    <string name="tag_9F47_description">Exponent of the card public key used in RSA algorithm.</string>
+    <string name="tag_9F47_purpose">Required for reconstructing card public key for dynamic authentication.</string>
+    <string name="tag_9F47_format">Binary, 1 or 3 bytes. Commonly 03 or 010001.</string>
+    <string name="tag_9F47_source">Read from card along with ICC public key certificate.</string>
+
+    <!-- Tag 9F48 - ICC Public Key Remainder -->
+    <string name="tag_9F48_name">ICC Public Key Remainder</string>
+    <string name="tag_9F48_description">Remaining portion of card public key when too large to fit in certificate.</string>
+    <string name="tag_9F48_purpose">Combined with certificate to form complete card public key.</string>
+    <string name="tag_9F48_format">Binary, variable length based on key size.</string>
+    <string name="tag_9F48_source">Read from card during authentication.</string>
+
+    <!-- Tag 9F4A - Static Data Authentication Tag List -->
+    <string name="tag_9F4A_name">Static Data Authentication Tag List</string>
+    <string name="tag_9F4A_description">List of tags of data objects to be included in Static Data Authentication.</string>
+    <string name="tag_9F4A_purpose">Specifies which data elements are protected by SDA signature for integrity verification.</string>
+    <string name="tag_9F4A_format">Binary, variable length. List of tag identifiers.</string>
+    <string name="tag_9F4A_source">Configured on card for SDA-capable applications.</string>
+
+    <!-- Tag 9F4C - ICC Dynamic Number -->
+    <string name="tag_9F4C_name">ICC Dynamic Number</string>
+    <string name="tag_9F4C_description">Time-variant number generated by card for Combined DDA/AC generation.</string>
+    <string name="tag_9F4C_purpose">Provides dynamic component for CDA authentication, ensuring freshness of card response.</string>
+    <string name="tag_9F4C_format">Binary, 2-8 bytes generated by card.</string>
+    <string name="tag_9F4C_source">Generated by card during CDA processing.</string>
+
+    <!-- Tag 9F4D - Log Entry -->
+    <string name="tag_9F4D_name">Transaction Log Entry</string>
+    <string name="tag_9F4D_description">Contains transaction log data maintained by card for offline transactions.</string>
+    <string name="tag_9F4D_purpose">Allows issuer to retrieve transaction history from card for reconciliation and fraud detection.</string>
+    <string name="tag_9F4D_format">Binary, variable length. Format defined by card application.</string>
+    <string name="tag_9F4D_source">Stored on card for each completed transaction.</string>
+
+    <!-- Tag 9F6E - Form Factor Indicator -->
+    <string name="tag_9F6E_name">Form Factor Indicator</string>
+    <string name="tag_9F6E_description">Indicates the form factor of the consumer payment device and its ability to change form factors.</string>
+    <string name="tag_9F6E_purpose">Identifies if payment device is card, phone, wearable, etc. Used for appropriate transaction processing.</string>
+    <string name="tag_9F6E_format">Binary, 4 bytes. Indicates device type and characteristics.</string>
+    <string name="tag_9F6E_source">Stored on device during provisioning.</string>
+
+    <!-- Tag 9F7C - Merchant Custom Data -->
+    <string name="tag_9F7C_name">Merchant Custom Data</string>
+    <string name="tag_9F7C_description">Custom data defined by merchant for inclusion in authorization request.</string>
+    <string name="tag_9F7C_purpose">Allows merchant to include additional proprietary information in transaction processing.</string>
+    <string name="tag_9F7C_format">Binary, variable length. Format defined by merchant.</string>
+    <string name="tag_9F7C_source">Generated by terminal based on merchant requirements.</string>
+
+    <!-- PAN Validation -->
+    <string name="pan_validation_valid">Valid</string>
+    <string name="pan_validation_invalid">Invalid checksum</string>
+    <string name="pan_validation_insufficient_digits">Insufficient digits</string>
+    <string name="pan_validation_invalid_format">Invalid format</string>
+    <string name="pan_validation_luhn_check">Luhn Check</string>
+    <string name="pan_validation_passed">Passed Luhn validation</string>
+    <string name="pan_validation_failed">Failed Luhn validation</string>
+
+    <!-- AIP Decoder -->
+    <string name="aip_decode_bits">Decode Bits</string>
+    <string name="aip_bit_decoding_title">Bit Decoding</string>
+    <string name="aip_sda_supported">SDA Supported</string>
+    <string name="aip_dda_supported">DDA Supported</string>
+    <string name="aip_cda_supported">CDA Supported</string>
+    <string name="aip_cardholder_verification">Cardholder Verification</string>
+    <string name="aip_terminal_risk_management">Terminal Risk Management</string>
+    <string name="aip_issuer_authentication">Issuer Authentication</string>
+    <string name="aip_on_device_verification">On-Device CVM</string>
+    <string name="aip_crl_supported">CRL Supported</string>
+    <string name="aip_sda_description">Static Data Authentication</string>
+    <string name="aip_dda_description">Dynamic Data Authentication</string>
+    <string name="aip_cda_description">Combined DDA/AC Generation</string>
 </resources>

@@ -187,14 +187,28 @@ data class EmvCardData(
     // Get cardholder-related tags
     private fun getCardholderTags(): List<EmvTag> {
         return buildList {
-            // Tag 5A PAN
+            val panDescription = buildString {
+                append("Primary account number")
+                cardholderData.panValidation?.let { validation ->
+                    append(" - Luhn: ")
+                    append(
+                        when (validation.validationType) {
+                            ValidationType.LUHN_VALID -> "Valid"
+                            ValidationType.LUHN_INVALID -> "Invalid checksum"
+                            ValidationType.INSUFFICIENT_DIGITS -> "Insufficient digits"
+                            ValidationType.INVALID_FORMAT -> "Invalid format"
+                        }
+                    )
+                }
+            }
+
             add(EmvTag(
                 tag = "5A",
                 tagName = "Primary Account Number (PAN)",
                 length = cardholderData.pan.length / 2,
                 value = cardholderData.pan,
                 valueDecoded = "****${cardholderData.panLastFour}",
-                description = "Primary account number"
+                description = panDescription
             ))
 
             // Tag 5F24 Expiration Date
