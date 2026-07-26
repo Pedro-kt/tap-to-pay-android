@@ -22,19 +22,34 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.domain.model.EmvTag
+import com.yumedev.taptopayandroid.domain.repository.EmvTagInfoRepository
 
 @Composable
-fun TagCardContent(tag: EmvTag) {
+fun TagCardContent(
+    tag: EmvTag,
+    tagInfoRepository: EmvTagInfoRepository = hiltViewModel<TagInfoViewModel>().tagInfoRepository
+) {
 
     val clipboardManager = LocalClipboardManager.current
     var isExpanded by remember { mutableStateOf(false) }
+    var showInfoDialog by remember { mutableStateOf(false) }
     val isLongValue = tag.value.length > 32
     val shouldShowExpandButton = isLongValue
     val tagIcon = getTagIcon(tag.tag)
     val tagImportance = getTagImportance(tag.tag)
     val badgeColor = getBadgeColor(tagImportance)
+    val hasDetailedInfo = tagInfoRepository.hasDetailedInfo(tag.tag)
+    val tagInfo = tagInfoRepository.getTagInfo(tag.tag)
+
+    if (showInfoDialog && tagInfo != null) {
+        TagInfoBottomSheet(
+            tagInfo = tagInfo,
+            onDismiss = { showInfoDialog = false }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -104,30 +119,54 @@ fun TagCardContent(tag: EmvTag) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Surface(
-                    shape = RoundedCornerShape(4.dp),
-                    color = MaterialTheme.colorScheme.secondaryContainer
-                ) {
-                    Text(
-                        text = "${tag.length} ${stringResource(R.string.bytes_suffix)}",
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        fontWeight = FontWeight.Medium
-                    )
+                if (hasDetailedInfo) {
+                    Surface(
+                        onClick = { showInfoDialog = true },
+                        shape = RoundedCornerShape(6.dp),
+                        border = androidx.compose.foundation.BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.outlineVariant
+                        ),
+                        color = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.Info,
+                                contentDescription = stringResource(R.string.tag_info_title),
+                                modifier = Modifier.size(18.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 }
 
-                IconButton(
+                Surface(
                     onClick = {
                         clipboardManager.setText(AnnotatedString(tag.value))
                     },
+                    shape = RoundedCornerShape(6.dp),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.outlineVariant
+                    ),
+                    color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.size(32.dp)
                 ) {
-                    Icon(
-                        Icons.Default.ContentCopy,
-                        contentDescription = stringResource(R.string.copy),
-                        modifier = Modifier.size(18.dp)
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.ContentCopy,
+                            contentDescription = stringResource(R.string.copy),
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
@@ -150,7 +189,7 @@ fun TagCardContent(tag: EmvTag) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(R.string.hex_value_label),
+                        text = "${stringResource(R.string.hex_value_label)} (${tag.length} ${stringResource(R.string.bytes_suffix)})",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Medium
