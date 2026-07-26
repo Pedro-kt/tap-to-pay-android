@@ -553,4 +553,19 @@
     <string name="pan_validation_luhn_check">Luhn Check</string>
     <string name="pan_validation_passed">Passed Luhn validation</string>
     <string name="pan_validation_failed">Failed Luhn validation</string>
+
+    <!-- AIP Decoder -->
+    <string name="aip_decode_bits">Decode Bits</string>
+    <string name="aip_bit_decoding_title">Bit Decoding</string>
+    <string name="aip_sda_supported">SDA Supported</string>
+    <string name="aip_dda_supported">DDA Supported</string>
+    <string name="aip_cda_supported">CDA Supported</string>
+    <string name="aip_cardholder_verification">Cardholder Verification</string>
+    <string name="aip_terminal_risk_management">Terminal Risk Management</string>
+    <string name="aip_issuer_authentication">Issuer Authentication</string>
+    <string name="aip_on_device_verification">On-Device CVM</string>
+    <string name="aip_crl_supported">CRL Supported</string>
+    <string name="aip_sda_description">Static Data Authentication</string>
+    <string name="aip_dda_description">Dynamic Data Authentication</string>
+    <string name="aip_cda_description">Combined DDA/AC Generation</string>
 </resources>

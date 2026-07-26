@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.yumedev.taptopayandroid.R
 import com.yumedev.taptopayandroid.domain.model.EmvTag
 import com.yumedev.taptopayandroid.domain.repository.EmvTagInfoRepository
+import com.yumedev.taptopayandroid.util.AipDecoder
 
 @Composable
 fun TagCardContent(
@@ -36,6 +37,7 @@ fun TagCardContent(
     val clipboardManager = LocalClipboardManager.current
     var isExpanded by remember { mutableStateOf(false) }
     var showInfoDialog by remember { mutableStateOf(false) }
+    var showAipDecoder by remember { mutableStateOf(false) }
     val isLongValue = tag.value.length > 32
     val shouldShowExpandButton = isLongValue
     val tagIcon = getTagIcon(tag.tag)
@@ -43,6 +45,8 @@ fun TagCardContent(
     val badgeColor = getBadgeColor(tagImportance)
     val hasDetailedInfo = tagInfoRepository.hasDetailedInfo(tag.tag)
     val tagInfo = tagInfoRepository.getTagInfo(tag.tag)
+    val isAipTag = tag.tag == "82"
+    val aipDecoded = if (isAipTag) AipDecoder.decode(tag.value) else null
 
     if (showInfoDialog && tagInfo != null) {
         TagInfoBottomSheet(
@@ -288,6 +292,30 @@ fun TagCardContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f)
                 )
+            }
+        }
+
+        if (isAipTag && aipDecoded != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            TextButton(
+                onClick = { showAipDecoder = !showAipDecoder },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = if (showAipDecoder) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = stringResource(R.string.aip_decode_bits),
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+
+            if (showAipDecoder) {
+                AipBitDecoder(aip = aipDecoded)
             }
         }
     }
