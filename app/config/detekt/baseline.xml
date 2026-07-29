@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>CognitiveComplexMethod:ApduCommandCard.kt$@Composable fun ApduCommandCard(command: ApduCommand)</ID>
+    <ID>CognitiveComplexMethod:ApduCommandCard.kt$@Composable private fun ApduStructureInfo(commandApdu: String)</ID>
+    <ID>CognitiveComplexMethod:CustomTabSelector.kt$@Composable fun CustomTabSelector( selectedTab: Int, onTabSelected: (Int) -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>CognitiveComplexMethod:EmvTagParser.kt$EmvTagParser$fun findTag(data: ByteArray, targetTag: String): ByteArray?</ID>
+    <ID>CognitiveComplexMethod:EmvTagParser.kt$EmvTagParser$private fun extractTagsRecursive(data: ByteArray, tags: MutableMap&lt;String, EmvTag&gt;)</ID>
+    <ID>CognitiveComplexMethod:HomeScreen.kt$@Composable fun HomeScreen( onGeneratePayment: (String) -&gt; Unit, innerPadding: PaddingValues = PaddingValues() )</ID>
+    <ID>CognitiveComplexMethod:NfcCardReader.kt$NfcCardReader$suspend fun readCard(tag: Tag, amountCents: Long? = null): Result&lt;EmvCardData&gt;</ID>
+    <ID>CognitiveComplexMethod:SettingsScreen.kt$@Composable private fun ThemeOption( text: String, icon: ImageVector?, isSelected: Boolean, onClick: () -&gt; Unit, modifier: Modifier = Modifier, cornerRadius: RoundedCornerShape )</ID>
+    <ID>CognitiveComplexMethod:SimplifiedCardView.kt$@Composable private fun SimplifiedCardField( label: String, value: String, badge: String?, panValidation: com.yumedev.taptopayandroid.domain.model.PanValidation? = null )</ID>
+    <ID>CognitiveComplexMethod:TagCardContent.kt$@Composable fun TagCardContent( tag: EmvTag, tagInfoRepository: EmvTagInfoRepository = hiltViewModel&lt;TagInfoViewModel&gt;().tagInfoRepository )</ID>
+    <ID>ComplexCondition:EmvTagParser.kt$EmvTagParser$tagHex != "90" &amp;&amp; tagHex != "6F" &amp;&amp; tagHex != "70" &amp;&amp; tagHex != "77" &amp;&amp; tagHex != "A5" &amp;&amp; tagHex != "BF0C"</ID>
+    <ID>CyclomaticComplexMethod:EmvCardData.kt$EmvCardData$fun getTagsByCategory(): Map&lt;String, List&lt;EmvTag&gt;&gt;</ID>
+    <ID>CyclomaticComplexMethod:EmvTagParser.kt$EmvTagParser$fun findTag(data: ByteArray, targetTag: String): ByteArray?</ID>
+    <ID>CyclomaticComplexMethod:EmvTagParser.kt$EmvTagParser$private fun extractTagsRecursive(data: ByteArray, tags: MutableMap&lt;String, EmvTag&gt;)</ID>
+    <ID>CyclomaticComplexMethod:NfcCardReader.kt$NfcCardReader$suspend fun readCard(tag: Tag, amountCents: Long? = null): Result&lt;EmvCardData&gt;</ID>
+    <ID>CyclomaticComplexMethod:TagCardContent.kt$@Composable fun TagCardContent( tag: EmvTag, tagInfoRepository: EmvTagInfoRepository = hiltViewModel&lt;TagInfoViewModel&gt;().tagInfoRepository )</ID>
+    <ID>ImplicitDefaultLocale:EmvCardData.kt$EmvCardData$String.format("%012X", amount)</ID>
+    <ID>ImplicitDefaultLocale:EmvTagParser.kt$EmvTagParser$String.format("%02d", value[0].toInt() and 0xFF)</ID>
+    <ID>ImplicitDefaultLocale:EmvTagParser.kt$EmvTagParser$String.format("%02d", value[1].toInt() and 0xFF)</ID>
+    <ID>ImplicitDefaultLocale:EmvTagParser.kt$EmvTagParser$String.format("%02d", value[2].toInt() and 0xFF)</ID>
+    <ID>ImplicitDefaultLocale:NfcCardReader.kt$NfcCardReader$String.format("%02X %02X", sw1, sw2)</ID>
+    <ID>ImplicitDefaultLocale:NfcCardReader.kt$NfcCardReader$String.format("Error: %02X %02X", sw1, sw2)</ID>
+    <ID>LongMethod:AipBitDecoder.kt$@Composable fun AipBitDecoder(aip: AipDecoded)</ID>
+    <ID>LongMethod:ApduCommandCard.kt$@Composable fun ApduCommandCard(command: ApduCommand)</ID>
+    <ID>LongMethod:ApduCommandCard.kt$@Composable private fun ApduSection( label: String, icon: ImageVector, data: String, isCommand: Boolean, onCopy: () -&gt; Unit )</ID>
+    <ID>LongMethod:ApduCommandCard.kt$@Composable private fun ApduStructureInfo(commandApdu: String)</ID>
+    <ID>LongMethod:CustomTabSelector.kt$@Composable fun CustomTabSelector( selectedTab: Int, onTabSelected: (Int) -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:EmvCardData.kt$EmvCardData$private fun getCardholderTags(): List&lt;EmvTag&gt;</ID>
+    <ID>LongMethod:EmvCardData.kt$EmvCardData$private fun getTransactionTags(): List&lt;EmvTag&gt;</ID>
+    <ID>LongMethod:ErrorScreen.kt$@Composable fun ErrorScreen( amount: String, errorMessage: String, innerPadding: PaddingValues, onNavigateToHome: () -&gt; Unit )</ID>
+    <ID>LongMethod:HomeScreen.kt$@Composable fun HomeScreen( onGeneratePayment: (String) -&gt; Unit, innerPadding: PaddingValues = PaddingValues() )</ID>
+    <ID>LongMethod:NavGraph.kt$@Composable fun NavGraph( navController: NavHostController, innerPadding: PaddingValues, onThemeChanged: (String) -&gt; Unit = {} )</ID>
+    <ID>LongMethod:NfcCardReader.kt$NfcCardReader$suspend fun readCard(tag: Tag, amountCents: Long? = null): Result&lt;EmvCardData&gt;</ID>
+    <ID>LongMethod:SettingsScreen.kt$@Composable fun SettingsScreen( innerPadding: PaddingValues = PaddingValues(), onThemeChanged: (String) -&gt; Unit = {}, viewModel: SettingsViewModel = hiltViewModel() )</ID>
+    <ID>LongMethod:SettingsScreen.kt$@Composable private fun ThemeSelector( selectedTheme: ThemeOption, onThemeSelected: (ThemeOption) -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:SimplifiedCardView.kt$@Composable fun SimplifiedCardView( emvCardData: EmvCardData, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:SimplifiedCardView.kt$@Composable private fun SimplifiedCardField( label: String, value: String, badge: String?, panValidation: com.yumedev.taptopayandroid.domain.model.PanValidation? = null )</ID>
+    <ID>LongMethod:SuccessScreen.kt$@Composable fun SuccessScreen( amount: String, emvCardData: EmvCardData, innerPadding: PaddingValues, onNavigateToDetails: () -&gt; Unit, onBack: () -&gt; Unit = {} )</ID>
+    <ID>LongMethod:TagCardContent.kt$@Composable fun TagCardContent( tag: EmvTag, tagInfoRepository: EmvTagInfoRepository = hiltViewModel&lt;TagInfoViewModel&gt;().tagInfoRepository )</ID>
+    <ID>LongMethod:TagInfoBottomSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun TagInfoBottomSheet( tagInfo: EmvTagInfo, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:TapToPayScreen.kt$@Composable private fun WaitingContent()</ID>
+    <ID>LoopWithTooManyJumpStatements:EmvTagParser.kt$EmvTagParser$while</ID>
+    <ID>LoopWithTooManyJumpStatements:NfcCardReader.kt$NfcCardReader$for</ID>
+    <ID>MatchingDeclarationName:SettingsScreen.kt$ThemeOption</ID>
+    <ID>MaxLineLength:ApduCommandCard.kt$StructureItem(stringResource(R.string.apdu_field_cla), bytes[0], stringResource(R.string.apdu_cla_description))</ID>
+    <ID>MaxLineLength:ApduCommandCard.kt$StructureItem(stringResource(R.string.apdu_field_data), dataBytes, stringResource(R.string.apdu_data_description, actualDataLength))</ID>
+    <ID>MaxLineLength:ApduCommandCard.kt$StructureItem(stringResource(R.string.apdu_field_data), remaining, stringResource(R.string.apdu_additional_data))</ID>
+    <ID>MaxLineLength:ApduCommandCard.kt$StructureItem(stringResource(R.string.apdu_field_lc), bytes[4], stringResource(R.string.apdu_lc_description, lcValue))</ID>
+    <ID>MaxLineLength:ApduCommandCard.kt$StructureItem(stringResource(R.string.apdu_field_le), bytes[4], stringResource(R.string.apdu_le_256_description))</ID>
+    <ID>MaxLineLength:ApduCommandCard.kt$StructureItem(stringResource(R.string.apdu_field_le), bytes[dataEndIndex], stringResource(R.string.apdu_le_description))</ID>
+    <ID>MaxLineLength:ApduCommandCard.kt$StructureItem(stringResource(R.string.apdu_field_p1), bytes[2], stringResource(R.string.apdu_p1_description))</ID>
+    <ID>MaxLineLength:ApduCommandCard.kt$StructureItem(stringResource(R.string.apdu_field_p2), bytes[3], stringResource(R.string.apdu_p2_description))</ID>
+    <ID>MaxLineLength:ApduCommandCard.kt$text = if (showStructure) stringResource(R.string.hide_apdu_structure) else stringResource(R.string.show_apdu_structure)</ID>
+    <ID>MaxLineLength:CardDetailScreen.kt$placeholder = if (selectedTab == 0) stringResource(R.string.search_tag_aid_value) else stringResource(R.string.search_command_status)</ID>
+    <ID>MaxLineLength:CustomTabSelector.kt$color = if (selectedTab == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:CustomTabSelector.kt$color = if (selectedTab == 1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:DetailLevelSelector.kt$color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:EmvTagParser.kt$EmvTagParser$if</ID>
+    <ID>MaxLineLength:NfcCardReader.kt$NfcCardReader$SecureLogger.dSecure(TAG, "Record SFI=$sfi Rec=$record: ${recordResponse.toHexString()}")</ID>
+    <ID>MaxLineLength:NfcCardReader.kt$NfcCardReader$val aidBytes = extractAID(ppseResponse) ?: return@withContext Result.failure(Exception("No AID found in PPSE response"))</ID>
+    <ID>MaxLineLength:NfcCardReaderTest.kt$NfcCardReaderTest$val response = byteArrayOf(0x6F.toByte(), 0x05.toByte(), 0x50.toByte(), 0x03.toByte(), 0x56.toByte(), 0x49.toByte(), 0x53.toByte())</ID>
+    <ID>MaxLineLength:NfcCardReaderTest.kt$NfcCardReaderTest$val response = byteArrayOf(0x6F.toByte(), 0x10.toByte(), 0x84.toByte(), 0x05.toByte(), 0x90.toByte(), 0x00.toByte())</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:SimplifiedCardView.kt$ValidationType.INSUFFICIENT_DIGITS -&gt; stringResource(R.string.pan_validation_insufficient_digits)</ID>
+    <ID>MaxLineLength:TagCardContent.kt$private</ID>
+    <ID>MaxLineLength:TagCardContent.kt$text = "${stringResource(R.string.hex_value_label)} (${tag.length} ${stringResource(R.string.bytes_suffix)})"</ID>
+    <ID>MaxLineLength:TagCardContent.kt$text = if (isExpanded) stringResource(R.string.show_less) else stringResource(R.string.show_all)</ID>
+    <ID>NewLineAtEndOfFile:CardholderData.kt$com.yumedev.taptopayandroid.domain.model.CardholderData.kt</ID>
+    <ID>NewLineAtEndOfFile:Color.kt$com.yumedev.taptopayandroid.presentation.ui.theme.Color.kt</ID>
+    <ID>NewLineAtEndOfFile:EmvTagParserTest.kt$com.yumedev.taptopayandroid.data.parser.EmvTagParserTest.kt</ID>
+    <ID>NewLineAtEndOfFile:HandleNfcTagUseCase.kt$com.yumedev.taptopayandroid.domain.usecase.HandleNfcTagUseCase.kt</ID>
+    <ID>NewLineAtEndOfFile:MainActivity.kt$com.yumedev.taptopayandroid.MainActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:NfcCardReader.kt$com.yumedev.taptopayandroid.data.datasource.nfc.NfcCardReader.kt</ID>
+    <ID>NewLineAtEndOfFile:NfcRepositoryImpl.kt$com.yumedev.taptopayandroid.data.repository.NfcRepositoryImpl.kt</ID>
+    <ID>NewLineAtEndOfFile:SecureLogger.kt$com.yumedev.taptopayandroid.util.SecureLogger.kt</ID>
+    <ID>NewLineAtEndOfFile:TagCardContent.kt$com.yumedev.taptopayandroid.presentation.ui.components.TagCardContent.kt</ID>
+    <ID>NewLineAtEndOfFile:Theme.kt$com.yumedev.taptopayandroid.presentation.ui.theme.Theme.kt</ID>
+    <ID>NewLineAtEndOfFile:Type.kt$com.yumedev.taptopayandroid.presentation.ui.theme.Type.kt</ID>
+    <ID>ReturnCount:AipDecoder.kt$AipDecoder$fun decode(hexValue: String): AipDecoded?</ID>
+    <ID>ReturnCount:EmvTagParser.kt$EmvTagParser$fun findTag(data: ByteArray, targetTag: String): ByteArray?</ID>
+    <ID>ReturnCount:EmvTagParser.kt$EmvTagParser$private fun determineCardType(aid: String, label: String?): CardType</ID>
+    <ID>ReturnCount:ValidatePanUseCase.kt$ValidatePanUseCase$operator fun invoke(pan: String): PanValidation</ID>
+    <ID>SwallowedException:AipDecoder.kt$AipDecoder$e: Exception</ID>
+    <ID>SwallowedException:SoundManager.kt$SoundManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AipDecoder.kt$AipDecoder$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NfcCardReader.kt$NfcCardReader$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SoundManager.kt$SoundManager$e: Exception</ID>
+    <ID>TooManyFunctions:EmvTagParser.kt$EmvTagParser</ID>
+    <ID>UnusedParameter:SoundManager.kt$SoundManager$soundName: String</ID>
+    <ID>UnusedPrivateMember:TapToPayViewModelTest.kt$TapToPayViewModelTest$private fun createSampleEmvCardData( pan: String = "4111111111111111", cardType: CardType = CardType.VISA ): EmvCardData</ID>
+    <ID>UnusedPrivateProperty:EmvTagParser.kt$EmvTagParser$j</ID>
+    <ID>UnusedPrivateProperty:HandleNfcTagUseCaseTest.kt$HandleNfcTagUseCaseTest$private val testDispatcher = StandardTestDispatcher()</ID>
+    <ID>UnusedPrivateProperty:NumericKeypad.kt$val interactionSource = remember { MutableInteractionSource() }</ID>
+    <ID>UnusedPrivateProperty:TapToPayViewModelTest.kt$TapToPayViewModelTest$val mockNfcManager2 = mockk&lt;NfcManager&gt;(relaxed = true) { every { nfcTagFlow } returns MutableSharedFlow&lt;Tag&gt;() }</ID>
+  </CurrentIssues>
+</SmellBaseline>
