@@ -160,15 +160,18 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*_Impl*",
         )
 
-    val debugTree =
-        fileTree("${project.layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
-            exclude(fileFilter)
-        }
+    val kotlinClasses = fileTree("${project.layout.buildDirectory.get()}/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes") {
+        exclude(fileFilter)
+    }
+
+    val javaClasses = fileTree("${project.layout.buildDirectory.get()}/intermediates/javac/debug/compileDebugJavaWithJavac/classes") {
+        exclude(fileFilter)
+    }
 
     val mainSrc = "${project.projectDir}/src/main/java"
 
     sourceDirectories.setFrom(files(mainSrc))
-    classDirectories.setFrom(files(debugTree))
+    classDirectories.setFrom(files(kotlinClasses, javaClasses))
     executionData.setFrom(
         fileTree(project.layout.buildDirectory.get()) {
             include("jacoco/testDebugUnitTest.exec")
@@ -221,12 +224,15 @@ tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
             "**/*_Impl*",
         )
 
-    val debugTree =
-        fileTree("${project.layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
-            exclude(fileFilter)
-        }
+    val kotlinClasses = fileTree("${project.layout.buildDirectory.get()}/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes") {
+        exclude(fileFilter)
+    }
 
-    classDirectories.setFrom(files(debugTree))
+    val javaClasses = fileTree("${project.layout.buildDirectory.get()}/intermediates/javac/debug/compileDebugJavaWithJavac/classes") {
+        exclude(fileFilter)
+    }
+
+    classDirectories.setFrom(files(kotlinClasses, javaClasses))
     executionData.setFrom(
         fileTree(project.layout.buildDirectory.get()) {
             include("jacoco/testDebugUnitTest.exec")
