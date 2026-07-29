@@ -4,8 +4,8 @@
 
 **A modern Android NFC card reader application for reading and parsing EMV contactless payment cards**
 
-[![CI](https://github.com/Pedro-kt/TaptoPayAndroid/actions/workflows/ci.yml/badge.svg)](https://github.com/Pedro-kt/TaptoPayAndroid/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/Pedro-kt/TaptoPayAndroid/branch/main/graph/badge.svg)](https://codecov.io/gh/Pedro-kt/TaptoPayAndroid)
+[![CI](https://github.com/Pedro-kt/tap-to-pay-android/actions/workflows/ci.yml/badge.svg)](https://github.com/Pedro-kt/tap-to-pay-android/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Pedro-kt/tap-to-pay-android/branch/main/graph/badge.svg?token=YOUR_CODECOV_TOKEN)](https://codecov.io/gh/Pedro-kt/tap-to-pay-android)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![API](https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=24)
 
